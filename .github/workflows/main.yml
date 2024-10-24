@@ -104,6 +104,7 @@ jobs:
 
           #13 Create Release
       - name: Create Release
+        if: env.TAG_EXISTS == 'false'
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab"
