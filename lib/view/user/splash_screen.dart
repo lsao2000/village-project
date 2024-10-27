@@ -36,7 +36,7 @@ class SplashScreenState extends State<SplashScreen> {
             Container(
               width: width,
               height: height,
-              color: sandyBeige,
+              color: deepBlue,
             ),
             const Align(
               //top: height / 3,
