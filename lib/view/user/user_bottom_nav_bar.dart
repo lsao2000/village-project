@@ -27,7 +27,7 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
           title: const Text(
             "Ighoumane",
             style:
-                TextStyle(color: deepBlue, fontFamily: "Baloo2", fontSize: 30),
+                TextStyle(color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
           ),
           actions: <Widget>[
             Container(
@@ -67,7 +67,7 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
           screens: _buildScreens(),
           items: _navBarItems(),
           controller: _controller,
-          backgroundColor: deepBlue,
+          backgroundColor: deepBlueDark,
           navBarHeight: 65,
         ));
   }
