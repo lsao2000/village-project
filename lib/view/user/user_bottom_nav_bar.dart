@@ -47,7 +47,7 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
                       padding: EdgeInsets.symmetric(
                           vertical: height * 0.01, horizontal: width * 0.01),
                       decoration: const BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.green),
+                          shape: BoxShape.circle, color: deepBlueDark),
                       child: const Text(
                         "2",
                         style: TextStyle(
