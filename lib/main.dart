@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:village_project/view/auth_screen/otp_screen.dart';
 import 'package:village_project/view/user/splash_screen.dart';
 
 void main() {
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:const SplashScreen(),
+      //home:const SplashScreen(),
+      home:OtpScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
