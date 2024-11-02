@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:village_project/view/auth_screen/otp_screen.dart';
-//import 'package:village_project/view/user/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -24,8 +23,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //home:const SplashScreen(),
-      home: OtpScreen(),
-      debugShowCheckedModeBanner: false,
+      home: OtpScreen(), debugShowCheckedModeBanner: false,
     );
   }
 }
