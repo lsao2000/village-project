@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
+import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/otp_screen.dart';
 
@@ -13,6 +16,11 @@ class AuthScreen extends StatefulWidget {
 class AuthScreenState extends State<AuthScreen> {
   bool inLogin = false;
   late bool _paswordVisible;
+  TextEditingController lastName = TextEditingController();
+  TextEditingController firstName = TextEditingController();
+  TextEditingController registerPhone = TextEditingController();
+  TextEditingController loginPhone = TextEditingController();
+  TextEditingController loginPassword = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -50,6 +58,7 @@ class AuthScreenState extends State<AuthScreen> {
               vertical: height * 0.01, horizontal: width * 0.03),
           width: width,
           child: TextFormField(
+              controller: firstName,
             keyboardType: TextInputType.text,
             //inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
             decoration: InputDecoration(
@@ -85,6 +94,7 @@ class AuthScreenState extends State<AuthScreen> {
               vertical: height * 0.01, horizontal: width * 0.03),
           width: width,
           child: TextFormField(
+              controller: lastName,
             keyboardType: TextInputType.text,
             //inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
             decoration: InputDecoration(
@@ -120,6 +130,7 @@ class AuthScreenState extends State<AuthScreen> {
               vertical: height * 0.01, horizontal: width * 0.03),
           width: width,
           child: TextFormField(
+              controller: registerPhone,
             keyboardType: const TextInputType.numberWithOptions(decimal: false),
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
@@ -196,6 +207,7 @@ class AuthScreenState extends State<AuthScreen> {
             vertical: height * 0.01, horizontal: width * 0.03),
         width: width,
         child: TextFormField(
+            controller: loginPhone,
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
@@ -231,6 +243,7 @@ class AuthScreenState extends State<AuthScreen> {
             vertical: height * 0.01, horizontal: width * 0.03),
         width: width,
         child: TextFormField(
+            controller: loginPassword,
           obscureText: _paswordVisible,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
@@ -273,8 +286,12 @@ class AuthScreenState extends State<AuthScreen> {
       CommonAuthButton(
           title: "Login",
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (ctx) => const OtpScreen()));
+            String phone = loginPhone.text.trim().toLowerCase().toString();
+            String password = loginPassword.text.trim().toLowerCase().toString();
+            log("phone: +212$phone");
+            log("password: $password");
+            AuthServices.receiveOTP(number: "+212$phone", context: context);
+            //Navigator.push(context, MaterialPageRoute(builder: (ctx) => const OtpScreen()));
           },
           buttonWidth: width,),
       Usefulfunctions.blankSpace(width: 0, height: height * 0.02),
