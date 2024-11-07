@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
-import 'package:village_project/view/user/user_bottom_nav_bar.dart';
+//import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
