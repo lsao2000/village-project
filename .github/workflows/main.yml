@@ -21,6 +21,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Create .env file for Api key
+        run: |
+          echo "ANDROID_API_KEY=${{ secrets.ANDROID_API_KEY}}" > .env
+          echo "IOS_API_KEY=${{ secrets.IOS_API_KEY}}" >> .env
+
       - name: Set Up Java
         uses: actions/setup-java@v3.12.0
         with:

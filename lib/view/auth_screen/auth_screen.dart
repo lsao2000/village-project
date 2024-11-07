@@ -1,8 +1,11 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
+import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
-import 'package:village_project/view/auth_screen/otp_screen.dart';
+import 'package:village_project/view/auth_screen/register_succes_screen.dart';
+import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -13,10 +16,21 @@ class AuthScreen extends StatefulWidget {
 class AuthScreenState extends State<AuthScreen> {
   bool inLogin = false;
   late bool _paswordVisible;
+  late bool _registerPaswordVisible;
+  late bool _verifyRegisterPaswordVisible;
+  TextEditingController lastName = TextEditingController();
+  TextEditingController firstName = TextEditingController();
+  TextEditingController registerPhone = TextEditingController();
+  TextEditingController loginPhone = TextEditingController();
+  TextEditingController loginPassword = TextEditingController();
+  TextEditingController registerPassword = TextEditingController();
+  TextEditingController registerVerifyPassword = TextEditingController();
   @override
   void initState() {
     super.initState();
     _paswordVisible = false;
+    _registerPaswordVisible = false;
+    _verifyRegisterPaswordVisible = false;
   }
 
   @override
@@ -24,134 +38,66 @@ class AuthScreenState extends State<AuthScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Builder(builder: (ctx) {
-          if (inLogin) {
-            return loginScreen(width, height);
-          }
-          return registerScreen(width, height);
-        }),
-      ),
-    );
+        appBar: AppBar(
+            title: const Center(
+          child: Text(
+            "Ighoumane",
+            style: TextStyle(
+                color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
+          ),
+        )),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Builder(builder: (ctx) {
+              if (inLogin) {
+                return loginScreen(width, height);
+              }
+              return registerScreen(width, height);
+            }),
+          ),
+        ));
   }
 
   Widget registerScreen(double width, double height) {
     return Column(
       children: [
-        const Text(
-          "Ighoumane",
-          style: TextStyle(
-              color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
-        ),
         Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
-        Container(
-          margin: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * 0.03),
-          width: width,
-          child: TextFormField(
-            keyboardType: TextInputType.text,
-            //inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-            decoration: InputDecoration(
-              label: Container(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.01),
-                child: const Text("FirstName"),
-              ),
-              labelStyle: const TextStyle(
-                  color: Colors.black38, fontWeight: FontWeight.bold),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.01),
-                  borderSide: const BorderSide(color: Colors.black38)),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: deepBlueDark),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                //borderSide: const BorderSide(color: deepBlueDark),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-              //enabledBorder: OutlineInputBorder()
-            ),
-            cursorColor: deepBlueDark,
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * 0.03),
-          width: width,
-          child: TextFormField(
-            keyboardType: TextInputType.text,
-            //inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-            decoration: InputDecoration(
-              label: Container(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.01),
-                child: const Text("LastName"),
-              ),
-              //labelText: "LastName",
-              labelStyle: const TextStyle(
-                  color: Colors.black38, fontWeight: FontWeight.bold),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.01),
-                  borderSide: const BorderSide(color: Colors.black38)),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.01),
-                  borderSide: const BorderSide(color: deepBlueDark)),
-
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-              //enabledBorder: OutlineInputBorder()
-            ),
-            cursorColor: deepBlueDark,
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * 0.03),
-          width: width,
-          child: TextFormField(
-            keyboardType: const TextInputType.numberWithOptions(decimal: false),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              label: Container(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.01),
-                child: const Text("Phone"),
-              ),
-              labelStyle: const TextStyle(
-                  color: Colors.black38, fontWeight: FontWeight.bold),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.01),
-                  borderSide: const BorderSide(color: Colors.black38)),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: deepBlueDark),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(width * 0.01),
-                borderSide: const BorderSide(color: Colors.black38),
-              ),
-            ),
-            cursorColor: deepBlueDark,
-          ),
-        ),
-        //Container(child: ,)
+        formField(width, height, firstName, "FirstName", TextInputType.text,
+            FilteringTextInputFormatter.singleLineFormatter),
+        formField(width, height, lastName, "LastName", TextInputType.text,
+            FilteringTextInputFormatter.singleLineFormatter),
+        formField(
+            width,
+            height,
+            registerPhone,
+            "Phone",
+            const TextInputType.numberWithOptions(decimal: false),
+            FilteringTextInputFormatter.digitsOnly),
+        passwordFormField(width, height, registerPassword, "Password",
+            _registerPaswordVisible, () {
+          setState(() {
+            _registerPaswordVisible = !_registerPaswordVisible;
+          });
+        }),
+        passwordFormField(width, height, registerVerifyPassword,
+            "Renter Password", _verifyRegisterPaswordVisible, () {
+          setState(() {
+            _verifyRegisterPaswordVisible = !_verifyRegisterPaswordVisible;
+          });
+        }),
         Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
         // ***************Press Register button.
-        CommonAuthButton(title: "Register", onPressed: () {}, buttonWidth: width,),
+        CommonAuthButton(
+          title: "Register",
+          onPressed: () {
+
+            //Navigator.pushAndRemoveUntil(
+            //    context,
+            //    MaterialPageRoute(builder: (ctx) =>const RegisterSuccesScreen()),
+            //    (route) => false);
+          },
+          buttonWidth: width,
+        ),
         Usefulfunctions.blankSpace(width: 0, height: height * 0.01),
         Container(
           margin: EdgeInsets.symmetric(horizontal: width * 0.03),
@@ -185,17 +131,13 @@ class AuthScreenState extends State<AuthScreen> {
 
   Widget loginScreen(double width, double height) {
     return Column(children: [
-      const Text(
-        "Ighoumane",
-        style:
-            TextStyle(color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
-      ),
       Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
       Container(
         margin: EdgeInsets.symmetric(
             vertical: height * 0.01, horizontal: width * 0.03),
         width: width,
         child: TextFormField(
+          controller: loginPhone,
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
@@ -231,6 +173,7 @@ class AuthScreenState extends State<AuthScreen> {
             vertical: height * 0.01, horizontal: width * 0.03),
         width: width,
         child: TextFormField(
+          controller: loginPassword,
           obscureText: _paswordVisible,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
@@ -271,12 +214,20 @@ class AuthScreenState extends State<AuthScreen> {
       Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
       //*********** Press Login button.
       CommonAuthButton(
-          title: "Login",
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (ctx) => const OtpScreen()));
-          },
-          buttonWidth: width,),
+        title: "Login",
+        onPressed: () {
+          String phone = loginPhone.text.trim().toLowerCase().toString();
+          String password = loginPassword.text.trim().toLowerCase().toString();
+          log("phone: +212$phone");
+          log("password: $password");
+          //AuthServices.receiveOTP(number: "+212$phone", context: context);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (ctx) =>const UserBottomNavBar() ),
+                (route) => false);
+        },
+        buttonWidth: width,
+      ),
       Usefulfunctions.blankSpace(width: 0, height: height * 0.02),
       Container(
         margin: EdgeInsets.symmetric(horizontal: width * 0.03),
@@ -306,11 +257,104 @@ class AuthScreenState extends State<AuthScreen> {
       ),
     ]);
   }
+
+  Widget passwordFormField(
+      double width,
+      double height,
+      TextEditingController controllerName,
+      String lableValue,
+      bool isVisible,
+      VoidCallback onPressedCallback) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+          vertical: height * 0.01, horizontal: width * 0.03),
+      width: width,
+      child: TextFormField(
+        controller: controllerName,
+        obscureText: isVisible,
+        keyboardType: TextInputType.text,
+        decoration: InputDecoration(
+          label: Container(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+            child: Text(lableValue),
+          ),
+          suffixIcon: IconButton(
+              onPressed: onPressedCallback,
+              icon: Icon(isVisible ? Icons.visibility_off : Icons.visibility)),
+          labelStyle: const TextStyle(
+              color: Colors.black38, fontWeight: FontWeight.bold),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(width * 0.01),
+              borderSide: const BorderSide(color: Colors.black38)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            borderSide: const BorderSide(color: deepBlueDark),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            //borderSide: const BorderSide(color: deepBlueDark),
+            borderSide: const BorderSide(color: Colors.black38),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            borderSide: const BorderSide(color: Colors.black38),
+          ),
+        ),
+        cursorColor: deepBlueDark,
+      ),
+    );
+  }
+
+  Widget formField(
+      double width,
+      double height,
+      TextEditingController controllerName,
+      String lableValue,
+      TextInputType inputType,
+      TextInputFormatter inputFormater) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+          vertical: height * 0.01, horizontal: width * 0.03),
+      width: width,
+      child: TextFormField(
+        controller: controllerName,
+        keyboardType: inputType,
+        inputFormatters: [inputFormater],
+        decoration: InputDecoration(
+          label: Container(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+            child: Text(lableValue),
+          ),
+          labelStyle: const TextStyle(
+              color: Colors.black38, fontWeight: FontWeight.bold),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(width * 0.01),
+              borderSide: const BorderSide(color: Colors.black38)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            borderSide: const BorderSide(color: deepBlueDark),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            borderSide: const BorderSide(color: Colors.black38),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(width * 0.01),
+            borderSide: const BorderSide(color: Colors.black38),
+          ),
+        ),
+        cursorColor: deepBlueDark,
+      ),
+    );
+  }
 }
 
 class CommonAuthButton extends StatelessWidget {
   const CommonAuthButton(
-      {super.key, required this.title, required this.onPressed, required this.buttonWidth});
+      {super.key,
+      required this.title,
+      required this.onPressed,
+      required this.buttonWidth});
   final String title;
   final VoidCallback onPressed;
   final double buttonWidth;
