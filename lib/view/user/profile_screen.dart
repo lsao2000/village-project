@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/utils/colors.dart';
@@ -9,6 +10,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
+    late String id;
+    @override
+      void initState() {
+        super.initState();
+        getUid();
+      }
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -74,10 +81,10 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               Usefulfunctions.blankSpace(height: height * 0.01, width: 0),
-              const Text(
+               Text(
                 maxLines: 1,
-                "Mbark Jarmone",
-                style: TextStyle(
+                id,
+                style:const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     overflow: TextOverflow.ellipsis),
@@ -135,5 +142,9 @@ class ProfileScreenState extends State<ProfileScreen> {
         )
       ],
     );
+  }
+  void getUid(){
+     User? user = FirebaseAuth.instance.currentUser;
+     id = user!.uid;
   }
 }
