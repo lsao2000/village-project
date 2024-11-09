@@ -1,9 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:village_project/main.dart';
-import 'package:village_project/view/user/splash_screen.dart';
-import 'package:village_project/view/user/user_bottom_nav_bar.dart';
+
+import 'mock.dart';
 
 void main() {
+    setupFirebaseAuthMocks();
+    setUpAll(()async {
+         await Firebase.initializeApp();
+        },);
   testWidgets('Village app', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());

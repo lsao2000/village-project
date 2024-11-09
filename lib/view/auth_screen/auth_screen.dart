@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/services/auth_services/auth_services.dart';
+import 'package:village_project/controller/services/firebase_services/registration_services.dart';
+import 'package:village_project/model/joined_user.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/register_succes_screen.dart';
 import 'package:village_project/view/user/user_bottom_nav_bar.dart';
@@ -62,17 +64,9 @@ class AuthScreenState extends State<AuthScreen> {
     return Column(
       children: [
         Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
-        formField(width, height, firstName, "FirstName", TextInputType.text,
-            FilteringTextInputFormatter.singleLineFormatter),
-        formField(width, height, lastName, "LastName", TextInputType.text,
-            FilteringTextInputFormatter.singleLineFormatter),
-        formField(
-            width,
-            height,
-            registerPhone,
-            "Phone",
-            const TextInputType.numberWithOptions(decimal: false),
-            FilteringTextInputFormatter.digitsOnly),
+        formField(width, height, firstName, "FirstName", TextInputType.text, FilteringTextInputFormatter.singleLineFormatter),
+        formField(width, height, lastName, "LastName", TextInputType.text, FilteringTextInputFormatter.singleLineFormatter),
+        formField( width, height, registerPhone, "Phone", TextInputType.phone, FilteringTextInputFormatter.digitsOnly),
         passwordFormField(width, height, registerPassword, "Password",
             _registerPaswordVisible, () {
           setState(() {
@@ -89,12 +83,25 @@ class AuthScreenState extends State<AuthScreen> {
         // ***************Press Register button.
         CommonAuthButton(
           title: "Register",
-          onPressed: () {
-
-            //Navigator.pushAndRemoveUntil(
-            //    context,
-            //    MaterialPageRoute(builder: (ctx) =>const RegisterSuccesScreen()),
-            //    (route) => false);
+          onPressed: () async {
+            String fName = firstName.text.trim().toString();
+            String lName = lastName.text.trim().toString();
+            String phoneNum = registerPhone.text.trim().toString();
+            String password = registerPassword.text.toString().trim();
+            String passwordTwo = registerVerifyPassword.text.toString().trim();
+            DateTime createdAccountDate = DateTime.now();
+            JoinedUser joinedUser = JoinedUser( firstName: fName, lastName: lName, phoneNumber: "+$phoneNum", createAt: createdAccountDate, password: password);
+            //joinedUser.setUserId = "3lksd";
+            //log(joinedUser.toMap().toString());
+            bool isAdded = await RegistrationServices.addUserInFirestore(
+                joinedUser: joinedUser);
+            isAdded
+                ? Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (ctx) => const RegisterSuccesScreen()),
+                    (route) => false)
+                : null;
           },
           buttonWidth: width,
         ),
@@ -215,16 +222,18 @@ class AuthScreenState extends State<AuthScreen> {
       //*********** Press Login button.
       CommonAuthButton(
         title: "Login",
-        onPressed: () {
+        onPressed: () async{
           String phone = loginPhone.text.trim().toLowerCase().toString();
           String password = loginPassword.text.trim().toLowerCase().toString();
-          log("phone: +212$phone");
+          log("phone: +$phone");
           log("password: $password");
+          String checkExistence = await  AuthServices.checkIfphoneExist("+$phone", password, context);
+          log("answear $checkExistence");
           //AuthServices.receiveOTP(number: "+212$phone", context: context);
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (ctx) =>const UserBottomNavBar() ),
-                (route) => false);
+          //Navigator.pushAndRemoveUntil(
+          //    context,
+          //    MaterialPageRoute(builder: (ctx) => const UserBottomNavBar()),
+          //    (route) => false);
         },
         buttonWidth: width,
       ),

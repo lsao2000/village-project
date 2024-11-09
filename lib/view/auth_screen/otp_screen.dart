@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
+import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
 
@@ -12,6 +14,12 @@ class OtpScreen extends StatefulWidget {
 }
 
 class OtpScreenState extends State<OtpScreen> {
+    TextEditingController otpMsg = TextEditingController();
+    @override
+      void dispose() {
+          otpMsg.dispose();
+        super.dispose();
+      }
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -33,6 +41,7 @@ class OtpScreenState extends State<OtpScreen> {
           ),
           Usefulfunctions.blankSpace(width: width, height: height * 0.02),
           Pinput(
+              controller: otpMsg,
             keyboardType: const TextInputType.numberWithOptions(decimal: false),
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             defaultPinTheme: PinTheme(
@@ -75,7 +84,14 @@ class OtpScreenState extends State<OtpScreen> {
             ],
           ),
           Usefulfunctions.blankSpace(width: width, height: height * 0.1),
-          CommonAuthButton(title: "Verfiy", onPressed: (){},buttonWidth: width * 0.5,)
+          CommonAuthButton(title: "Verfiy", onPressed: (){
+              //AuthServices.verifyPhoneNumber();
+              String otp = otpMsg.text.trim().toString();
+              //log(otp);
+
+              AuthServices.verifyOTP(context: context, otp: otp);
+              log("end");
+          },buttonWidth: width * 0.5,)
         ],
       ),
     );

@@ -13,15 +13,15 @@ class SigninlogicState extends State<Signinlogic> {
   @override
   void initState() {
     super.initState();
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    //  checkIfUserLogin();
-    //});
-    checkIfUserLogin();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkIfUserLogin();
+    });
+    //checkIfUserLogin();
   }
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
+      return Placeholder();
   }
 
   checkIfUserLogin() {
@@ -29,11 +29,11 @@ class SigninlogicState extends State<Signinlogic> {
     isLogin
         ? Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (ctx) => const AuthScreen()),
+            MaterialPageRoute(builder: (ctx) => const UserBottomNavBar()),
             (route) => false)
         : Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (ctx) => const UserBottomNavBar()),
+            MaterialPageRoute(builder: (ctx) => const AuthScreen()),
             (route) => false);
   }
 }
