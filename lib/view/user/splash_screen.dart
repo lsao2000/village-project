@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/SignInLogic.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
+import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 //import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -70,14 +75,37 @@ class SplashScreenState extends State<SplashScreen> {
     super.dispose();
   }
 
+  Widget checkIfUserLogin() {
+    bool isLogin = AuthServices.checkAuthentication();
+    try {
+        return isLogin?const UserBottomNavBar():const AuthScreen();
+      //return isLogin
+      //    ? Navigator.pushAndRemoveUntil(
+      //        context,
+      //        PageTransition(
+      //            child: const UserBottomNavBar(),
+      //            type: PageTransitionType.scale,
+      //            alignment: Alignment.center),
+      //        (route) => false)
+      //    : Navigator.pushAndRemoveUntil(
+      //        context,
+      //        PageTransition(
+      //            child: const AuthScreen(),
+      //            type: PageTransitionType.rightToLeftJoined),
+      //        (route) => false);
+    } catch (e) {
+      log("failed removing not existing widget ${e.toString()}");
+      return const AuthScreen();
+    }
+  }
   void startTimer() {
     Future.delayed(
       const Duration(seconds: 3),
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          //builder: (ctx) => const UserBottomNavBar(),
-          builder: (ctx) => const Signinlogic(),
+          builder: (ctx) =>  checkIfUserLogin(),
+          //builder: (ctx) => const Signinlogic(),
         ),
       ),
     );

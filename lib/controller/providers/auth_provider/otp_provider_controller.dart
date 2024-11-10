@@ -6,11 +6,14 @@ class OtpProviderController extends ChangeNotifier{
     String verficationId ="";
     void updateVerficationId(String verficationId){
         this.verficationId = verficationId;
+        notifyListeners();
     }
     void updateOtpMsg(String otpMsg){
         this.otpMsg = otpMsg;
+        notifyListeners();
     }
     void updatePhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
+        notifyListeners();
     }
 }
