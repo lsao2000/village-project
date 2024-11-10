@@ -27,9 +27,10 @@ class RegistrationServices {
     try {
       CollectionReference userTable =
           FirebaseFirestore.instance.collection("users");
+      //log(ighoumaneUser.getFirstName);
       DocumentReference newUser = userTable.doc(userCredential.user!.uid);
-      String userId = newUser.id;
-      ighoumaneUser.setUserId = userId;
+      //String userId = newUser.id;
+      //ighoumaneUser.setUserId = userId;
       await newUser.set(ighoumaneUser.toMap());
     } catch (e) {
       log("failed user addition ${e.toString()}");

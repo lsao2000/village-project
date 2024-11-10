@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:village_project/model/post_model.dart';
 import 'package:village_project/utils/colors.dart';
@@ -153,116 +152,124 @@ class HomeState extends State<Home> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: ListView.builder(
-      itemCount: lstPostModels.length,
-      itemBuilder: (ctx, index) {
-        PostModel postModel = lstPostModels[index];
-        return Container(
-          padding: EdgeInsets.symmetric(
-              horizontal: width * 0.04, vertical: height * 0.02),
-          decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: deepBlue))),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(width * 0.4),
-                    child: Image(
-                      fit: BoxFit.cover,
-                      image: const AssetImage("assets/images/youghmane.png"),
-                      width: width * 0.1,
-                      height: height * 0.05,
+      body: ListView.builder(
+        itemCount: lstPostModels.length,
+        itemBuilder: (ctx, index) {
+          PostModel postModel = lstPostModels[index];
+          return Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: width * 0.04, vertical: height * 0.02),
+            decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: deepBlue))),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(width * 0.4),
+                      child: Image(
+                        fit: BoxFit.cover,
+                        image: const AssetImage("assets/images/youghmane.png"),
+                        width: width * 0.1,
+                        height: height * 0.05,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: height * 0.01,
-                  ),
-                  Expanded(
-                    child: Text(postModel.getName),
-                  ),
-                  Text(postModel.getDate),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.01),
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: postModel.getDescription,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                        )),
-                    TextSpan(
-                        text: postModel.getTag,
-                        style: const TextStyle(
-                          color: deepBlue,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    const TextSpan(
-                        text: " lorem lks ksdis ndsi ksi lsidf ksidn ",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                        )),
-                  ]),
+                    SizedBox(
+                      width: height * 0.01,
+                    ),
+                    Expanded(
+                      child: Text(postModel.getName),
+                    ),
+                    Text(postModel.getDate),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: height * 0.008, left: width * 0.01),
-                    child: Text(
-                      "${postModel.getLike}",
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+                  child: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: postModel.getDescription,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                          )),
+                      TextSpan(
+                          text: postModel.getTag,
+                          style: const TextStyle(
+                            color: deepBlue,
+                            fontWeight: FontWeight.bold,
+                          )),
+                      const TextSpan(
+                          text: " lorem lks ksdis ndsi ksi lsidf ksidn ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                          )),
+                    ]),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(
+                          top: height * 0.008, left: width * 0.01),
+                      child: Text(
+                        "${postModel.getLike}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.02,
+                    ),
+                    Icon(
+                      Icons.thumb_up,
+                      color: postModel.getIsLike ? deepBlue : black,
+                    ),
+                    SizedBox(
+                      width: width * 0.08,
+                    ),
+                    Text(
+                      "${postModel.getDislike}",
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  SizedBox(
-                    width: width * 0.02,
-                  ),
-                  Icon(
-                    Icons.thumb_up,
-                    color: postModel.getIsLike ? deepBlue : black,
-                  ),
-                  SizedBox(
-                    width: width * 0.08,
-                  ),
-                  Text(
-                    "${postModel.getDislike}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    width: width * 0.02,
-                  ),
-                  Icon(
-                    Icons.thumb_down,
-                    color: postModel.getIsDislike ? desertOrange : black,
-                  )
-                ],
-              )
-            ],
-          ),
-        );
-      },
-    ),
-    floatingActionButton: FloatingActionButton(
-        backgroundColor: white,
-        onPressed: (){
-            log("pressed");
-        },
-        child:const Text("نشر +",
-            style: TextStyle(color: deepBlueDark, fontWeight: FontWeight.bold, fontSize: 18),
+                    SizedBox(
+                      width: width * 0.02,
+                    ),
+                    Icon(
+                      Icons.thumb_down,
+                      color: postModel.getIsDislike ? desertOrange : black,
+                    )
+                  ],
+                )
+              ],
             ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: white,
+        onPressed: () async {
+          await FirebaseAuth.instance.signOut();
+          //Navigator.of(context).pushAndRemoveUntil(
+          //    MaterialPageRoute(builder: (ctx) => Signinlogic()),
+          //    (route) => false);
+          //Navigator.of(context).pushReplacement(
+            //MaterialPageRoute(builder: (context) => const AuthScreen()),
+          //);
+        },
+        child: const Text(
+          "نشر +",
+          style: TextStyle(
+              color: deepBlueDark, fontWeight: FontWeight.bold, fontSize: 18),
         ),
+      ),
     );
   }
 }

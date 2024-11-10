@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
+import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
-import 'package:village_project/view/user/chat_screen.dart';
-import 'package:village_project/view/user/discussions_screen.dart';
-import 'package:village_project/view/user/home.dart';
-import 'package:village_project/view/user/meeting_screen.dart';
-import 'package:village_project/view/user/profile_screen.dart';
+import 'package:village_project/view/user/nav_bar_screens/chat/chat_screen.dart';
+import 'package:village_project/view/user/nav_bar_screens/discussins/discussions_screen.dart';
+import 'package:village_project/view/user/nav_bar_screens/home/home.dart';
+import 'package:village_project/view/user/nav_bar_screens/meeting/meeting_screen.dart';
+import 'package:village_project/view/user/nav_bar_screens/profile/profile_screen.dart';
 
 class UserBottomNavBar extends StatefulWidget {
   const UserBottomNavBar({super.key});
@@ -18,16 +21,29 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
   @override
+  void initState() {
+    AuthServices.intilizeIghoumaneUser(context);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    var ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context);
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: white,
+          backgroundColor: white,
           title: const Text(
             "Ighoumane",
-            style:
-                TextStyle(color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
+            style: TextStyle(
+                color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
           ),
           actions: <Widget>[
             Container(
