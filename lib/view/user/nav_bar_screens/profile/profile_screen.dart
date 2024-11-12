@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,10 +57,16 @@ class ProfileScreenState extends State<ProfileScreen> {
                         right: 0,
                         child: InkWell(
                           onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) =>const UpdateUserInfoScreen()));
+                            // Navigate to the new screen without the persistent navbar
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UpdateUserInfoScreen()),
+                            );
+                            //Navigator.push(
+                            //    context,
+                            //    MaterialPageRoute(
+                            //        builder: (ctx) => NewScreen()));
                           },
                           child: const Icon(
                             Icons.settings,
@@ -187,20 +192,22 @@ class ProfileScreenState extends State<ProfileScreen> {
           itemCount: postCount,
           itemBuilder: (ctx, index) {
             return Container(
-                decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: black))),
-                padding: EdgeInsets.symmetric(vertical: height * 0.1),
-                child: Center(
-                    child: Text(
+              decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: black))),
+              padding: EdgeInsets.symmetric(vertical: height * 0.1),
+              child: Center(
+                child: Text(
                   "post number ${index + 1}",
-                )));
+                ),
+              ),
+            );
           }),
     );
   }
 
   String getDateFormat() {
     IghoumaneUser ighoumaneUser =
-        Provider.of<IghoumaneUserProvider>(context).ighoumaneUser!;
+        Provider.of<IghoumaneUserProvider>(context).ighoumaneUser;
     int year = ighoumaneUser.getCreatedDate.year;
     int month = ighoumaneUser.getCreatedDate.month;
     String day = ighoumaneUser.getCreatedDate.day > 9
