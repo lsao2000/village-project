@@ -11,6 +11,10 @@ class IghoumaneUserProvider extends ChangeNotifier {
     initilizeListFreinds([]);
     initilizeListPost([]);
   }
+  void updateIghoumaneUser(IghoumaneUser ighoumaneUser){
+      this.ighoumaneUser = ighoumaneUser;
+      notifyListeners();
+  }
   void initilizeIghoumaneUser(IghoumaneUser ighoumaneUser) {
     this.ighoumaneUser = ighoumaneUser;
     notifyListeners();

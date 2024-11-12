@@ -7,7 +7,6 @@ import 'package:village_project/controller/services/firebase_services/registrati
 import 'package:village_project/model/joined_user.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/register_succes_screen.dart';
-import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -64,9 +63,12 @@ class AuthScreenState extends State<AuthScreen> {
     return Column(
       children: [
         Usefulfunctions.blankSpace(width: 0, height: height * 0.04),
-        formField(width, height, firstName, "FirstName", TextInputType.text, FilteringTextInputFormatter.singleLineFormatter),
-        formField(width, height, lastName, "LastName", TextInputType.text, FilteringTextInputFormatter.singleLineFormatter),
-        formField( width, height, registerPhone, "Phone", TextInputType.phone, FilteringTextInputFormatter.digitsOnly),
+        formField(width, height, firstName, "FirstName", TextInputType.text,
+            FilteringTextInputFormatter.singleLineFormatter),
+        formField(width, height, lastName, "LastName", TextInputType.text,
+            FilteringTextInputFormatter.singleLineFormatter),
+        formField(width, height, registerPhone, "Phone", TextInputType.phone,
+            FilteringTextInputFormatter.digitsOnly),
         passwordFormField(width, height, registerPassword, "Password",
             _registerPaswordVisible, () {
           setState(() {
@@ -90,9 +92,12 @@ class AuthScreenState extends State<AuthScreen> {
             String password = registerPassword.text.toString().trim();
             String passwordTwo = registerVerifyPassword.text.toString().trim();
             DateTime createdAccountDate = DateTime.now();
-            JoinedUser joinedUser = JoinedUser( firstName: fName, lastName: lName, phoneNumber: "+$phoneNum", createAt: createdAccountDate, password: password);
-            //joinedUser.setUserId = "3lksd";
-            //log(joinedUser.toMap().toString());
+            JoinedUser joinedUser = JoinedUser(
+                firstName: fName,
+                lastName: lName,
+                phoneNumber: "+$phoneNum",
+                createAt: createdAccountDate,
+                password: password);
             bool isAdded = await RegistrationServices.addUserInFirestore(
                 joinedUser: joinedUser);
             isAdded
@@ -148,6 +153,10 @@ class AuthScreenState extends State<AuthScreen> {
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
+              prefix:const Text("+212  "),
+              prefixStyle:const TextStyle(color: black, fontSize: 16),
+              hintText: "601010101",
+              hintStyle:const TextStyle(color: Colors.black26),
             label: Container(
               padding: EdgeInsets.symmetric(horizontal: width * 0.01),
               child: const Text("Phone"),
@@ -222,18 +231,13 @@ class AuthScreenState extends State<AuthScreen> {
       //*********** Press Login button.
       CommonAuthButton(
         title: "Login",
-        onPressed: () async{
+        onPressed: () async {
           String phone = loginPhone.text.trim().toLowerCase().toString();
           String password = loginPassword.text.trim().toLowerCase().toString();
-          log("phone: +$phone");
+          log("phone: +212$phone");
           log("password: $password");
-          String checkExistence = await  AuthServices.checkIfphoneExist("+$phone", password, context);
+          String checkExistence = await AuthServices.checkIfphoneExist( "+212$phone", password, context);
           log("answear $checkExistence");
-          //AuthServices.receiveOTP(number: "+212$phone", context: context);
-          //Navigator.pushAndRemoveUntil(
-          //    context,
-          //    MaterialPageRoute(builder: (ctx) => const UserBottomNavBar()),
-          //    (route) => false);
         },
         buttonWidth: width,
       ),

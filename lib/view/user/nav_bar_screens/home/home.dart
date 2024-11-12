@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:village_project/model/post_model.dart';
 import 'package:village_project/utils/colors.dart';
+import 'package:village_project/view/auth_screen/SignInLogic.dart';
+import 'package:village_project/view/user/nav_bar_screens/home/add_post_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -254,20 +256,23 @@ class HomeState extends State<Home> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: white,
+        backgroundColor: deepBlueDark,
         onPressed: () async {
-          await FirebaseAuth.instance.signOut();
+          Navigator.of(context, rootNavigator: true)
+              .push(MaterialPageRoute(builder: (ctx) => const AddPostScreen()));
+          //await FirebaseAuth.instance.signOut();
           //Navigator.of(context).pushAndRemoveUntil(
-          //    MaterialPageRoute(builder: (ctx) => Signinlogic()),
+          //    MaterialPageRoute(builder: (ctx) => ),
           //    (route) => false);
           //Navigator.of(context).pushReplacement(
-            //MaterialPageRoute(builder: (context) => const AuthScreen()),
+          //MaterialPageRoute(builder: (context) => const AuthScreen()),
           //);
         },
+        //child: Icon(Icons.post_add, color: white ,),
         child: const Text(
-          "نشر +",
+          "Post",
           style: TextStyle(
-              color: deepBlueDark, fontWeight: FontWeight.bold, fontSize: 18),
+              color: white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
     );
