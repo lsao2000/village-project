@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:village_project/model/freind_model.dart';
+import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/post_model.dart';
 import 'package:village_project/model/user.dart';
 
 class IghoumaneUserProvider extends ChangeNotifier {
   late IghoumaneUser ighoumaneUser;
-  late List<PostModel> lstPosts;
+  late List<IghoumaneUserPost> lstPosts;
   late List<FreindModel> lstFreinds;
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
-    initilizeListPost([]);
   }
   void updateIghoumaneUser(IghoumaneUser ighoumaneUser){
       this.ighoumaneUser = ighoumaneUser;
@@ -20,7 +20,7 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initilizeListPost(List<PostModel> lstPosts) {
+  void initilizeListPost(List<IghoumaneUserPost> lstPosts) {
     this.lstPosts = lstPosts;
     notifyListeners();
   }
@@ -30,8 +30,8 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateListPosts(PostModel postModel) {
-    lstPosts.add(postModel);
+  void updateListPosts(IghoumaneUserPost  ighoumaneUserPost) {
+    lstPosts.add(ighoumaneUserPost);
     notifyListeners();
   }
 
@@ -39,4 +39,10 @@ class IghoumaneUserProvider extends ChangeNotifier {
     lstFreinds.add(freindModel);
     notifyListeners();
   }
+  //void updatePostReaction({required int index, List<}){
+  //    IghoumaneUserPost ighoumaneUserPost = lstPosts[index];
+  //    ighoumaneUserPost.setListReactinos =
+  //
+  //    notifyListeners();
+  //}
 }
