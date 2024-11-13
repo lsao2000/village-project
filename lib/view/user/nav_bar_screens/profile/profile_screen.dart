@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
+import 'package:village_project/controller/services/firebase_services/user_services.dart';
+import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/user/nav_bar_screens/profile/update_user_info_screen.dart';
@@ -15,9 +19,15 @@ class ProfileScreen extends StatefulWidget {
 
 class ProfileScreenState extends State<ProfileScreen> {
   late String id;
+  List<IghoumaneUserPost> lstPosts = [];
+  late IghoumaneUserProvider ighoumaneUserProvider;
   @override
   void initState() {
-    getId();
+    setState(() {
+      ighoumaneUserProvider =
+          Provider.of<IghoumaneUserProvider>(context, listen: false);
+      lstPosts = ighoumaneUserProvider.lstPosts;
+    });
     super.initState();
   }
 
@@ -25,8 +35,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    IghoumaneUserProvider ighoumaneUserProvider =
-        Provider.of<IghoumaneUserProvider>(context);
+    //IghoumaneUserProvider  ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context);
     return Column(
       children: [
         Container(
@@ -38,7 +47,6 @@ class ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Stack(
                     children: [
@@ -63,10 +71,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) =>
                                       const UpdateUserInfoScreen()),
                             );
-                            //Navigator.push(
-                            //    context,
-                            //    MaterialPageRoute(
-                            //        builder: (ctx) => NewScreen()));
                           },
                           child: const Icon(
                             Icons.settings,
@@ -109,8 +113,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               Usefulfunctions.blankSpace(height: height * 0.01, width: 0),
               Text(
                 maxLines: 1,
-                //id,
-                "${ighoumaneUserProvider.ighoumaneUser?.getFirstName} ${ighoumaneUserProvider.ighoumaneUser?.getLastName}",
+                "${ighoumaneUserProvider.ighoumaneUser.getFirstName} ${ighoumaneUserProvider.ighoumaneUser.getLastName}",
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -120,12 +123,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      //text: "",
-                      text: getDateFormat(),
+                      text: getDateFormat(
+                          ighoumaneUserProvider.ighoumaneUser.getCreatedDate),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black26,
-                        //fontSize: 11
                       ),
                     ),
                   ],
@@ -138,7 +140,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   textWidthBasis: TextWidthBasis.parent,
-                  //maxLines: ,
                   text: TextSpan(children: [
                     TextSpan(
                         text: ighoumaneUserProvider
@@ -171,7 +172,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
             );
           }
-          return getPostsScreen(postCount: postCount, height: height);
+          return getPostsScreen(
+              postCount: postCount, height: height, width: width);
         }),
       ],
     );
@@ -186,26 +188,158 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget getPostsScreen({required int postCount, required double height}) {
+  Widget getPostsScreen(
+      {required int postCount, required double height, required double width}) {
     return Expanded(
       child: ListView.builder(
           itemCount: postCount,
           itemBuilder: (ctx, index) {
+            IghoumaneUserPost ighoumaneUserPost = lstPosts[index];
+            var ls = lstPosts[index]
+                .getLstReactions
+                .where((el) =>
+                    el.getUserId ==
+                    ighoumaneUserProvider.ighoumaneUser.getUserId)
+                .toList();
+            bool isLiked =
+                ls.isNotEmpty && ls.first.getType == "like" ? true : false;
+            bool isDisliked =
+                ls.isNotEmpty && ls.first.getType == "dilike" ? true : false;
             return Container(
               decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: black))),
-              padding: EdgeInsets.symmetric(vertical: height * 0.1),
-              child: Center(
-                child: Text(
-                  "post number ${index + 1}",
-                ),
+                  border: Border(bottom: BorderSide(color: deepBlue))),
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.01, horizontal: width * .03),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(width * 0.4),
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image:
+                              const AssetImage("assets/images/youghmane.png"),
+                          width: width * 0.1,
+                          height: height * 0.05,
+                        ),
+                      ),
+                      SizedBox(
+                        width: height * 0.01,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${ighoumaneUserProvider.ighoumaneUser.getFirstName} ${ighoumaneUserProvider.ighoumaneUser.getLastName}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Text(
+                              getDateFormat(ighoumaneUserPost.getCreatedAt),
+                              style: const TextStyle(
+                                  color: black38,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuButton(
+                          icon: const Icon(Icons.more_vert),
+                          onSelected: (value) {},
+                          itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: "delete",
+                                  child: const ListTile(
+                                    title: Text('Delete'),
+                                    trailing: Icon(Icons.remove),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  onTap: () {},
+                                )
+                              ]),
+                    ],
+                  ),
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+                    child: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            //text: ighoumaneUserPost.postId,
+                            text: ighoumaneUserPost.getContent,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                            )),
+                      ]),
+                    ),
+                  ),
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: height * 0.008, left: width * 0.01),
+                        child: Text(
+                         "${getLikeCount(index)}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        width: width * 0.02,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          isLiked = !isLiked;
+                          String postId = ighoumaneUserPost.postId!;
+                          //UserServices.addLikeToPost(context: context, postId: postId);
+                          isLiked ? log("like") : log("delete like");
+                        },
+                        child: Icon(
+                          Icons.thumb_up,
+                          color: isLiked ? deepBlue : black,
+                        ),
+                      ),
+                      SizedBox(
+                        width: width * 0.08,
+                      ),
+                       Text(
+                       "${getDislikeCount(index)}",
+                        //"${postModel.getDislike}",
+                        style:const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: width * 0.02,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          isDisliked = !isDisliked;
+                          isDisliked ? log("dislike") : log("delete dislike");
+                        },
+                        child: Icon(
+                          Icons.thumb_down,
+                          color: isDisliked ? desertOrange : black,
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
             );
           }),
     );
   }
 
-  String getDateFormat() {
+  String getDateFormat(DateTime dateFormated) {
     IghoumaneUser ighoumaneUser =
         Provider.of<IghoumaneUserProvider>(context).ighoumaneUser;
     int year = ighoumaneUser.getCreatedDate.year;
@@ -214,5 +348,21 @@ class ProfileScreenState extends State<ProfileScreen> {
         ? ighoumaneUser.getCreatedDate.day.toString()
         : "0${ighoumaneUser.getCreatedDate.day}";
     return "$day-$month-$year";
+  }
+
+  int getLikeCount(int index) {
+    var ls = lstPosts[index]
+        .getLstReactions
+        .where((el) => el.getType == "like")
+        .toList();
+    return ls.length;
+  }
+
+  int getDislikeCount(int index) {
+    var ls = lstPosts[index]
+        .getLstReactions
+        .where((el) => el.getType == "dilike")
+        .toList();
+    return ls.length;
   }
 }

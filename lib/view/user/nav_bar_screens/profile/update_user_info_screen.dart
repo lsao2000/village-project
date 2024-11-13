@@ -25,7 +25,7 @@ class UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
   late IghoumaneUserProvider ighoumaneUserProvider;
   @override
   void initState() {
-    ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context, listen: false) ;
+    ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context, listen: false);
     firstName.text = ighoumaneUserProvider.ighoumaneUser.getFirstName;
     lastName.text = ighoumaneUserProvider.ighoumaneUser.getLastName;
     description.text = ighoumaneUserProvider.ighoumaneUser.getDescription;

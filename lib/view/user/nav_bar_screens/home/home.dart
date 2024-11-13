@@ -260,15 +260,7 @@ class HomeState extends State<Home> {
         onPressed: () async {
           Navigator.of(context, rootNavigator: true)
               .push(MaterialPageRoute(builder: (ctx) => const AddPostScreen()));
-          //await FirebaseAuth.instance.signOut();
-          //Navigator.of(context).pushAndRemoveUntil(
-          //    MaterialPageRoute(builder: (ctx) => ),
-          //    (route) => false);
-          //Navigator.of(context).pushReplacement(
-          //MaterialPageRoute(builder: (context) => const AuthScreen()),
-          //);
         },
-        //child: Icon(Icons.post_add, color: white ,),
         child: const Text(
           "Post",
           style: TextStyle(

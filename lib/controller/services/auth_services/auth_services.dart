@@ -24,12 +24,10 @@ class AuthServices {
       await auth.verifyPhoneNumber(
         phoneNumber: mobileNumber,
         verificationCompleted: (phoneAuthCredential) {
-          //log(phoneAuthCredential.toString());
-          print("verification Completed :${phoneAuthCredential.toString()}");
+          log("verification Completed :${phoneAuthCredential.toString()}");
         },
         verificationFailed: (error) {
-          print("Error in verfication : ${error.toString()}");
-          //log(error.toString());
+          log("Error in verfication : ${error.toString()}");
         },
         codeSent: (verificationId, forceResendingToken) {
           context
@@ -47,8 +45,7 @@ class AuthServices {
         codeAutoRetrievalTimeout: (verificationId) {},
       );
     } catch (e) {
-      //log(e.toString());
-      print("error in verify Phone Number ${e.toString()}");
+      log("error in verify Phone Number ${e.toString()}");
     }
   }
 
@@ -102,7 +99,6 @@ class AuthServices {
           .where("user_id", isEqualTo: id)
           .get();
       var user = querySnapshot.docs.first;
-      log("error here");
       Timestamp userTimeStamp = user['createdAt'];
       DateTime userDate = userTimeStamp.toDate();
       IghoumaneUser ighoumaneUser = IghoumaneUser(
@@ -113,9 +109,9 @@ class AuthServices {
           password: user['password']);
       ighoumaneUser.setDescription = user['description'];
       ighoumaneUser.setUserId = id;
-      log(ighoumaneUser.toMap().toString());
       Provider.of<IghoumaneUserProvider>(context, listen: false)
           .initilizeIghoumaneUser(ighoumaneUser);
+      UserServices.getListPost(userId: id, context: context);
     } catch (e) {
       log("error in intializing  ${e.toString()}");
     }
@@ -206,7 +202,6 @@ class AuthServices {
       return e.toString();
     }
   }
-
   static bool checkAuthentication() {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
