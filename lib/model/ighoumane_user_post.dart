@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/reaction_type.dart';
 
 class IghoumaneUserPost {
@@ -29,7 +31,19 @@ class IghoumaneUserPost {
     postId = post.id;
     Timestamp postDate = post["created_at"];
     _createdAt = postDate.toDate();
+    //updateReactions(context, post.id);
+    //var reaction_list = post["reaction_type"];
   }
+  getReactionsTypeFromQuery(
+      QueryDocumentSnapshot<Map<String, dynamic>> reactions) {
+    ReactionType reactionType = ReactionType.addReaction(
+        userId: reactions["reacter_id"], type: reactions["react_type"]);
+    _lstReaction.add(reactionType);
+  }
+  updateReactions(BuildContext context, String id) async{
+    _lstReaction = await UserServices.getReactionsTypeFromPost(context: context, id: id);
+  }
+
   set setListReactinos(List<ReactionType> lstReactions) {
     _lstReaction = lstReactions;
   }

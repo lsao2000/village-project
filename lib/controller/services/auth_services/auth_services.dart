@@ -9,6 +9,7 @@ import 'package:village_project/controller/providers/auth_provider/joined_user_p
 import 'package:village_project/controller/providers/auth_provider/otp_provider_controller.dart';
 import 'package:village_project/controller/services/firebase_services/registration_services.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
+import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/joined_user.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/view/auth_screen/SignInLogic.dart';
@@ -109,9 +110,20 @@ class AuthServices {
           password: user['password']);
       ighoumaneUser.setDescription = user['description'];
       ighoumaneUser.setUserId = id;
-      Provider.of<IghoumaneUserProvider>(context, listen: false)
-          .initilizeIghoumaneUser(ighoumaneUser);
-      UserServices.getListPost(userId: id, context: context);
+      var provider = Provider.of<IghoumaneUserProvider>(context, listen: false);
+      provider.initilizeIghoumaneUser(ighoumaneUser);
+      var querySnapshotPost = await FirebaseFirestore.instance
+          .collection("posts")
+          //.where("user_id", isEqualTo: id)
+          .get();
+      await provider.initilizeListPost(
+          querySnapshotPost.docs
+              .map((el) =>
+                  IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .toList(),
+          context);
+      //UserServices.
+     //await provider.startLiseningToUsrPost(context);
     } catch (e) {
       log("error in intializing  ${e.toString()}");
     }
@@ -202,6 +214,7 @@ class AuthServices {
       return e.toString();
     }
   }
+
   static bool checkAuthentication() {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
