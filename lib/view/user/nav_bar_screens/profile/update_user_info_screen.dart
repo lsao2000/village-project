@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
-import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/utils/colors.dart';
