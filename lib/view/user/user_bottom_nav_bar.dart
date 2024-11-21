@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -10,6 +12,7 @@ import 'package:village_project/view/user/nav_bar_screens/discussins/discussions
 import 'package:village_project/view/user/nav_bar_screens/home/home.dart';
 import 'package:village_project/view/user/nav_bar_screens/meeting/meeting_screen.dart';
 import 'package:village_project/view/user/nav_bar_screens/profile/profile_screen.dart';
+import 'package:village_project/view/user/nav_bar_screens/search/search_screen.dart';
 
 class UserBottomNavBar extends StatefulWidget {
   const UserBottomNavBar({super.key});
@@ -46,8 +49,17 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
                 color: deepBlueDark, fontFamily: "Baloo2", fontSize: 30),
           ),
           actions: <Widget>[
+            IconButton(
+                onPressed: () {
+
+                    showSearch(context: context, delegate: SearchScreen());
+                },
+                icon: Icon(
+                  Icons.search,
+                  size: width * 0.08,
+                )),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: width * 0.05),
+              margin: EdgeInsets.only(right: width * 0.03, left: width * 0.01),
               child: Stack(
                 children: [
                   Positioned(
