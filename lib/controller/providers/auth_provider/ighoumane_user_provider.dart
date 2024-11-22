@@ -10,6 +10,7 @@ class IghoumaneUserProvider extends ChangeNotifier {
   late IghoumaneUser ighoumaneUser;
   List<IghoumaneUserPost>? lstAllPosts;
   late List<FreindModel> lstFreinds;
+  int searchItemCount = 20;
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
   }
@@ -25,11 +26,6 @@ class IghoumaneUserProvider extends ChangeNotifier {
     });
   }
 
-  void updateIghoumaneUser(IghoumaneUser ighoumaneUser) {
-    this.ighoumaneUser = ighoumaneUser;
-    notifyListeners();
-  }
-
   void initilizeIghoumaneUser(IghoumaneUser ighoumaneUser) {
     this.ighoumaneUser = ighoumaneUser;
     notifyListeners();
@@ -38,21 +34,11 @@ class IghoumaneUserProvider extends ChangeNotifier {
   Future<void> initilizeListPost(
       List<IghoumaneUserPost> lstPosts, BuildContext context) async {
     lstAllPosts = lstPosts;
-    //lstAllPosts!.map((el) async {
-      //var reactionsQuery = await db
-      //    .collection("posts")
-      //    .doc(el.postId)
-      //    .collection("reaction_type")
-      //    .snapshots()
-      //    .listen((snapshot) {
-      //  List<ReactionType> reactionTypes = snapshot.docs
-      //      .map((el) => ReactionType.fromQuerySnapshots(reactions: el))
-      //      .toList();
-      //  el.setListReactinos = reactionTypes;
-        //notifyListeners();
-      //});
-    //});
-    //db.collection("posts").doc
+    notifyListeners();
+  }
+
+  void initilizeListFreinds(List<FreindModel> lstFreinds) {
+    this.lstFreinds = lstFreinds;
     notifyListeners();
   }
 
@@ -62,8 +48,8 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initilizeListFreinds(List<FreindModel> lstFreinds) {
-    this.lstFreinds = lstFreinds;
+  void updateIghoumaneUser(IghoumaneUser ighoumaneUser) {
+    this.ighoumaneUser = ighoumaneUser;
     notifyListeners();
   }
 
@@ -74,6 +60,11 @@ class IghoumaneUserProvider extends ChangeNotifier {
 
   void updateListFreinds(FreindModel freindModel) {
     lstFreinds.add(freindModel);
+    notifyListeners();
+  }
+
+  void updateSearchItemCount() {
+    searchItemCount += 20;
     notifyListeners();
   }
 }
