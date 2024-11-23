@@ -5,11 +5,12 @@ import 'package:village_project/model/freind_model.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
+import 'package:village_project/model/user_ighoumane_freind.dart';
 
 class IghoumaneUserProvider extends ChangeNotifier {
   late IghoumaneUser ighoumaneUser;
   List<IghoumaneUserPost>? lstAllPosts;
-  late List<FreindModel> lstFreinds;
+  late List<UserIghoumaneFreind> lstFreinds;
   int searchItemCount = 20;
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
@@ -26,6 +27,12 @@ class IghoumaneUserProvider extends ChangeNotifier {
     });
   }
 
+  void updateFreindsIds({required String id}) {
+    lstFreinds.removeWhere((item) => item.getId == id);
+    ighoumaneUser.getLstFreindsIds.removeWhere((item) => item == id);
+    notifyListeners();
+  }
+
   void initilizeIghoumaneUser(IghoumaneUser ighoumaneUser) {
     this.ighoumaneUser = ighoumaneUser;
     notifyListeners();
@@ -37,7 +44,7 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initilizeListFreinds(List<FreindModel> lstFreinds) {
+  void initilizeListFreinds(List<UserIghoumaneFreind> lstFreinds) {
     this.lstFreinds = lstFreinds;
     notifyListeners();
   }
@@ -53,13 +60,19 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateIghoumaneUserLstFreindIds({required List<String> lstFreindIds}) {
+    ighoumaneUser.setLstFreindIds = lstFreindIds;
+    notifyListeners();
+  }
+
   void updateListPosts(IghoumaneUserPost ighoumaneUserPost) {
     lstAllPosts!.add(ighoumaneUserPost);
     notifyListeners();
   }
 
-  void updateListFreinds(FreindModel freindModel) {
+  void addToListFreinds(UserIghoumaneFreind freindModel) {
     lstFreinds.add(freindModel);
+    ighoumaneUser.getLstFreindsIds.add(freindModel.getId);
     notifyListeners();
   }
 

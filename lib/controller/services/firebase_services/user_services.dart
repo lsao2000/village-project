@@ -145,44 +145,14 @@ class UserServices {
     }
   }
 
-  //static Future<List<IghoumaneUserPost>> getListPost(
-  //    {required String userId, required BuildContext context}) async {
-  //  try {
-  //    var querySnapshot = await db
-  //        .collection("posts")
-  //        .where("user_id", isEqualTo: userId)
-  //        .get();
-  //    List<IghoumaneUserPost> lstPosts = querySnapshot.docs.map((el) {
-  //      IghoumaneUserPost ighoumaneUserPost =
-  //          IghoumaneUserPost.getPostFromQuerySnapshot(el, context);
-  //      //getReactionsTypeFromPost(postId: ighoumaneUserPost.postId!)
-  //      //    .then((value) async {
-  //      //  ighoumaneUserPost.setListReactinos = value;
-  //      //});
-  //      return ighoumaneUserPost;
-  //    }).toList();
-  //    Provider.of<IghoumaneUserProvider>(context, listen: false)
-  //        .initilizeListPost(lstPosts, context);
-  //    return lstPosts;
-  //  } catch (e) {
-  //    log("failed to initialize user posts ${e.toString()}");
-  //    return [];
-  //  }
-  //}
-
   static Future<List<ReactionType>> getReactionsTypeFromPost(
       {required BuildContext context, required String id}) async {
-    //var lstPosts = context.read<IghoumaneUserProvider>().lstPosts;
-    //lstPosts.map((el) async {
     var reactionsQuery =
         await db.collection("posts").doc(id).collection("reaction_type").get();
     List<ReactionType> reactionTypes = reactionsQuery.docs
         .map((el) => ReactionType.fromQuerySnapshots(reactions: el))
         .toList();
-    //Provider.of<IghoumaneUserProvider>(context)
-    //    .getPostReactions(reactionTypes, lstPosts.indexOf(el));
     return reactionTypes;
-    //});
   }
 
   static deletePost(
@@ -191,7 +161,6 @@ class UserServices {
       var postCollection = db.collection("posts");
       postCollection.doc(postId).delete();
       var lstPosts = await postCollection.get();
-      //;
       Provider.of<IghoumaneUserProvider>(context, listen: false)
           .initilizeListPost(
               lstPosts.docs

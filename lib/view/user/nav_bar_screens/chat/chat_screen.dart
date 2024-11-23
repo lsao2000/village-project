@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
+import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/model/freind_model.dart';
+import 'package:village_project/model/user_ighoumane_freind.dart';
 import 'package:village_project/utils/colors.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -10,56 +13,22 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> {
-  List<FreindModel> lstAllFreindModel = [
-    FreindModel(
-        name: "Hasan Fdayli",
-        message: "Chtari 3andek ya jit 3andek gbil ma jbartk",
-        notifcationMessageCount: 2),
-    FreindModel(
-        name: "Mohamed Fdayli", message: "slm", notifcationMessageCount: 1),
-    FreindModel(
-        name: "Ali Fdayli",
-        message: "jib m3ak atay",
-        notifcationMessageCount: 0),
-    FreindModel(
-        name: "Makhtar Ben3mer",
-        message: "Chtari ya",
-        notifcationMessageCount: 4),
-    FreindModel(
-        name: "Yossef Bouchan",
-        message: "la tnsa maya",
-        notifcationMessageCount: 3),
-    FreindModel(
-        name: "Hasan Skaih",
-        message: "lah ykch7ak",
-        notifcationMessageCount: 0),
-    FreindModel(
-        name: "Bayhi Tanbih",
-        message: "Chtari 3andek ya",
-        notifcationMessageCount: 1),
-    FreindModel(
-        name: "Smail Skaih", message: "ma bhit", notifcationMessageCount: 5),
-    FreindModel(
-        name: "Hasan Fdayli",
-        message: "ma jbarto ya khayi",
-        notifcationMessageCount: 0),
-    FreindModel(
-        name: "Faryat Bouchan",
-        message: "inchallah",
-        notifcationMessageCount: 11),
-    FreindModel(
-        name: "Abdellah Fdayli",
-        message: "amin ya molana",
-        notifcationMessageCount: 1),
-  ];
+  //List<FreindModel> lstAllFreindModel = [
+  //  FreindModel(
+  //      name: "Hasan Fdayli",
+  //      message: "Chtari 3andek ya jit 3andek gbil ma jbartk",
+  //      notifcationMessageCount: 2),
+  //];
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    List<UserIghoumaneFreind> lstAllFreindUser =
+        Provider.of<IghoumaneUserProvider>(context).lstFreinds;
     return ListView.builder(
-        itemCount: lstAllFreindModel.length,
+        itemCount: lstAllFreindUser.length,
         itemBuilder: (ctx, index) {
-          FreindModel freindModel = lstAllFreindModel[index];
+          UserIghoumaneFreind userIghoumaneFreind = lstAllFreindUser[index];
           return InkWell(
               onTap: () {},
               child: Container(
@@ -83,7 +52,7 @@ class ChatScreenState extends State<ChatScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        SizedBox(
                           width: width * 0.7,
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
@@ -91,42 +60,43 @@ class ChatScreenState extends State<ChatScreen> {
                             children: [
                               // freind name.
                               Text(
-                                freindModel.getName,
-                                style: TextStyle(
+                              "${ userIghoumaneFreind.getFirstName} ${userIghoumaneFreind.getastName}",
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 15),
                               ),
                               // notifcation message number.
-                              Builder(builder: (ctx) {
-                                if (freindModel.getNotificationMessageCount ==
-                                    0) {
-                                  return const Text("");
-                                }
-                                return Container(
-                                  width: width * 0.05,
-                                  height: height * 0.05,
-                                  alignment: Alignment.center,
-                                  decoration: const BoxDecoration(
-                                    color: deepBlueDark,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    "${freindModel.getNotificationMessageCount}",
-                                    style: TextStyle(
-                                      color: white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: width * 0.03,
-                                    ),
-                                  ),
-                                );
-                              }),
+                              //Builder(builder: (ctx) {
+                              //  if (freindModel.getNotificationMessageCount ==
+                              //      0) {
+                              //    return const Text("");
+                              //  }
+                              //  return Container(
+                              //    width: width * 0.05,
+                              //    height: height * 0.05,
+                              //    alignment: Alignment.center,
+                              //    decoration: const BoxDecoration(
+                              //      color: deepBlueDark,
+                              //      shape: BoxShape.circle,
+                              //    ),
+                              //    child: Text(
+                              //      "${freindModel.getNotificationMessageCount}",
+                              //      style: TextStyle(
+                              //        color: white,
+                              //        fontWeight: FontWeight.bold,
+                              //        fontSize: width * 0.03,
+                              //      ),
+                              //    ),
+                              //  );
+                              //}),
                             ],
                           ),
                         ),
                         Container(
                           constraints: BoxConstraints(maxWidth: width * 0.7),
-                          child: Text(
-                            freindModel.getMessage,
-                            style: const TextStyle(
+                          child:const Text(
+                              "msg ghir kantisti bih",
+                            //freindModel.getMessage,
+                            style:  TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 color: Colors.black45,
                                 fontWeight: FontWeight.bold),

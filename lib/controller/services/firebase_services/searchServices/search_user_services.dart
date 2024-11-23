@@ -7,6 +7,7 @@ import 'package:village_project/controller/providers/auth_provider/ighoumane_use
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/freindship_model.dart';
 import 'package:village_project/model/user.dart';
+import 'package:village_project/model/user_ighoumane_freind.dart';
 
 class SearchUserServices {
   static Future<QuerySnapshot> searchUsers(
@@ -23,7 +24,10 @@ class SearchUserServices {
   }
 
   static addNewFreind(
-      {required String freindId, required BuildContext context}) async {
+      {required String freindId,
+      required BuildContext context,
+      required String firstName,
+      required String lastName}) async {
     try {
       String currentUserId =
           Provider.of<IghoumaneUserProvider>(context, listen: false)
@@ -38,6 +42,10 @@ class SearchUserServices {
         "freinds": FieldValue.arrayUnion([freindId])
       });
       await db.collection("freindship").doc().set(freindshipModel.toMap());
+      UserIghoumaneFreind userIghoumaneFreind = UserIghoumaneFreind(
+          id: freindId, firstName: firstName, lastName: lastName);
+      Provider.of<IghoumaneUserProvider>(context,listen: false)
+          .addToListFreinds(userIghoumaneFreind);
     } catch (e) {
       log("failed to add freindship  ${e.toString()}");
     }
@@ -60,8 +68,10 @@ class SearchUserServices {
           .where("user2_id", isEqualTo: sortUsersId[1])
           .get();
       freindShipModel.docs.first.reference.delete();
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .updateFreindsIds(id: freindId);
       //await db.collection("freindship")
-      log("deleted");
+      log("deleted ");
     } catch (e) {
       log("failed to delete freind ${e.toString()}");
     }

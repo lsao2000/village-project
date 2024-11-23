@@ -152,6 +152,8 @@ class SearchScreen extends SearchDelegate<String> {
                               onPressed: () {
                                 log("add freind ${ighoumaneUser.getUserId}");
                                 SearchUserServices.addNewFreind(
+                                    firstName: ighoumaneUser.getFirstName,
+                                    lastName: ighoumaneUser.getLastName,
                                     freindId: ighoumaneUser.getUserId,
                                     context: context);
                                 //following = !following;
@@ -216,6 +218,8 @@ class SearchScreen extends SearchDelegate<String> {
                             //key: ValueKey(following),
                             onPressed: () {
                               SearchUserServices.addNewFreind(
+                                  firstName: ighoumaneUser.getFirstName,
+                                  lastName: ighoumaneUser.getLastName,
                                   freindId: ighoumaneUser.getUserId,
                                   context: context);
                             },

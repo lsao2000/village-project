@@ -12,6 +12,7 @@ import 'package:village_project/controller/services/firebase_services/user_servi
 import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/joined_user.dart';
 import 'package:village_project/model/user.dart';
+import 'package:village_project/model/user_ighoumane_freind.dart';
 import 'package:village_project/view/auth_screen/SignInLogic.dart';
 import 'package:village_project/view/auth_screen/otp_screen.dart';
 
@@ -69,7 +70,8 @@ class AuthServices {
             lastName: joinedUser.getLastName,
             phoneNumber: joinedUser.getPhoneNumber,
             createAt: joinedUser.getCreatedDate,
-            password: joinedUser.getPassword);
+            password: joinedUser.getPassword,
+            lstFreindsIds: []);
         ighoumaneUser.setUserId = creadential.user!.uid;
         Provider.of<IghoumaneUserProvider>(context, listen: false)
             .initilizeIghoumaneUser(ighoumaneUser);
@@ -99,15 +101,21 @@ class AuthServices {
           .collection("users")
           .where("user_id", isEqualTo: id)
           .get();
+
       var user = querySnapshot.docs.first;
       Timestamp userTimeStamp = user['createdAt'];
       DateTime userDate = userTimeStamp.toDate();
+
       IghoumaneUser ighoumaneUser = IghoumaneUser(
           firstName: user['firstName'],
           lastName: user['lastName'],
           phoneNumber: user['phoneNumber'],
           createAt: userDate,
-          password: user['password']);
+          password: user['password'],
+          lstFreindsIds: user["freinds"] is Iterable
+              ? List<String>.from(user["freinds"])
+              : []);
+
       ighoumaneUser.setDescription = user['description'];
       ighoumaneUser.setUserId = id;
       var provider = Provider.of<IghoumaneUserProvider>(context, listen: false);
@@ -118,12 +126,10 @@ class AuthServices {
           .get();
       await provider.initilizeListPost(
           querySnapshotPost.docs
-              .map((el) =>
-                  IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
               .toList(),
           context);
-      //UserServices.
-     //await provider.startLiseningToUsrPost(context);
+      _initilizeListFreindsUsers( lstFreindsIds: ighoumaneUser.getLstFreindsIds, context: context);
     } catch (e) {
       log("error in intializing  ${e.toString()}");
     }
@@ -212,6 +218,37 @@ class AuthServices {
     } catch (e) {
       log("failed checking phone&password ${e.toString()}");
       return e.toString();
+    }
+  }
+
+  static _initilizeListFreindsUsers(
+      {required List<String> lstFreindsIds,
+      required BuildContext context}) async {
+    try {
+      if (lstFreindsIds.isNotEmpty) {
+        int chunkSize = 10;
+        List<UserIghoumaneFreind> newLstFreindIds = [];
+        for (var i = 0; i < lstFreindsIds.length; i += chunkSize) {
+          final freindIdsSublist = lstFreindsIds.sublist(
+              i,
+              i + chunkSize > lstFreindsIds.length
+                  ? lstFreindsIds.length
+                  : i + chunkSize);
+          var data = await db
+              .collection("users")
+              .where("user_id", whereIn: freindIdsSublist)
+              .get();
+          newLstFreindIds.addAll(data.docs
+              .map((el) => UserIghoumaneFreind.getFromDocumentSnapshot(el))
+              .toList());
+        }
+        Provider.of<IghoumaneUserProvider>(context, listen: false)
+            .initilizeListFreinds(newLstFreindIds);
+        Provider.of<IghoumaneUserProvider>(context, listen: false)
+            .updateIghoumaneUserLstFreindIds(lstFreindIds: lstFreindsIds);
+      }
+    } catch (e) {
+      log("failed to initilizeListFreinds ${e.toString()}");
     }
   }
 

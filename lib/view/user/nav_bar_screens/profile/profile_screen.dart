@@ -94,6 +94,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             TextSpan(
                                 text:
+                                //"${ighoumaneUser.getLstFreindsIds.length}",),
                                     "${ighoumaneUserProvider.lstAllPosts?.where((el) => el.getUserId == ighoumaneUser.getUserId).length}\n"),
                             const TextSpan(text: "Posts"),
                           ])),
@@ -108,7 +109,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             TextSpan(
                                 text:
-                                    "${ighoumaneUserProvider.lstFreinds.length}\n"),
+                                "${ighoumaneUser.getLstFreindsIds.length}\n",),
+                                    //"${ighoumaneUserProvider.lstFreinds.length}\n"),
                             const TextSpan(text: "Freinds"),
                           ])),
                 ],
