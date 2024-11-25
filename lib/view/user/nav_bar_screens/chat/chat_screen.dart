@@ -1,10 +1,11 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
-import 'package:village_project/model/freind_model.dart';
 import 'package:village_project/model/user_ighoumane_freind.dart';
 import 'package:village_project/utils/colors.dart';
+import 'package:village_project/view/user/nav_bar_screens/chat/messaging_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -13,12 +14,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> {
-  //List<FreindModel> lstAllFreindModel = [
-  //  FreindModel(
-  //      name: "Hasan Fdayli",
-  //      message: "Chtari 3andek ya jit 3andek gbil ma jbartk",
-  //      notifcationMessageCount: 2),
-  //];
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -30,7 +25,15 @@ class ChatScreenState extends State<ChatScreen> {
         itemBuilder: (ctx, index) {
           UserIghoumaneFreind userIghoumaneFreind = lstAllFreindUser[index];
           return InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (context) => MessagingScreen(
+                      freindId: userIghoumaneFreind.getId,
+                    ),
+                  ),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(
                     vertical: height * .01, horizontal: width * 0.03),
@@ -60,7 +63,7 @@ class ChatScreenState extends State<ChatScreen> {
                             children: [
                               // freind name.
                               Text(
-                              "${ userIghoumaneFreind.getFirstName} ${userIghoumaneFreind.getastName}",
+                                "${userIghoumaneFreind.getFirstName} ${userIghoumaneFreind.getastName}",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 15),
                               ),
@@ -93,10 +96,9 @@ class ChatScreenState extends State<ChatScreen> {
                         ),
                         Container(
                           constraints: BoxConstraints(maxWidth: width * 0.7),
-                          child:const Text(
-                              "msg ghir kantisti bih",
-                            //freindModel.getMessage,
-                            style:  TextStyle(
+                          child: const Text(
+                            "msg ghir kantisti bih",
+                            style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 color: Colors.black45,
                                 fontWeight: FontWeight.bold),

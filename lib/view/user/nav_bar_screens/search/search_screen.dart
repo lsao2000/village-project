@@ -177,6 +177,7 @@ class SearchScreen extends SearchDelegate<String> {
                                             BorderRadius.circular(8))),
                               ),
                             ),
+
                           );
                         }
                         var freids = snapshot.data!.data()!["freinds"];

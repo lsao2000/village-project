@@ -24,6 +24,7 @@ class IghoumaneUser {
         _password = password,
         _lstFreindsIds = lstFreindsIds,
         _createdAt = createAt;
+  IghoumaneUser.basicInfo(this._firstName, this._lastName);
   Map<String, dynamic> toMap() {
     return {
       "user_id": _userId,

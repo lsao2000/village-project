@@ -33,9 +33,12 @@ class UserServices {
       DateTime creationDate = DateTime.now();
       IghoumaneUserPost ighoumaneUserPost = IghoumaneUserPost(
           content: content, userId: userId, createdAt: creationDate);
-      await db.collection("posts").doc().set(ighoumaneUserPost.toMap());
-      //Provider.of<IghoumaneUserProvider>(context, listen: false)
-      //    .updateListPosts(ighoumaneUserPost);
+      await db.collection("posts").add(ighoumaneUserPost.toMap()).then((doc) {
+        ighoumaneUserPost.postId = doc.id;
+      });
+
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .updateListPosts(ighoumaneUserPost);
       Navigator.of(context).pop();
     } catch (e) {
       log("failed to add post ${e.toString()}");
@@ -156,17 +159,23 @@ class UserServices {
   }
 
   static deletePost(
-      {required BuildContext context, required String postId}) async {
+      {required BuildContext context,
+      required String postId,
+      required String userId}) async {
     try {
       var postCollection = db.collection("posts");
       postCollection.doc(postId).delete();
       var lstPosts = await postCollection.get();
+      var currentUserPosts =
+          await postCollection.where("user_id", isEqualTo: userId).get();
       Provider.of<IghoumaneUserProvider>(context, listen: false)
-          .initilizeListPost(
-              lstPosts.docs
-                  .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-                  .toList(),
-              context);
+          .initilizeCurrentUserPosts(currentUserPosts.docs
+              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .toList());
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .initilizeListPost(lstPosts.docs
+              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .toList());
     } catch (e) {
       log("failed to delete post ${e.toString()}");
     }

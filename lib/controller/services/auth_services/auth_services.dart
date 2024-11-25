@@ -124,12 +124,16 @@ class AuthServices {
           .collection("posts")
           //.where("user_id", isEqualTo: id)
           .get();
-      await provider.initilizeListPost(
-          querySnapshotPost.docs
-              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-              .toList(),
-          context);
-      _initilizeListFreindsUsers( lstFreindsIds: ighoumaneUser.getLstFreindsIds, context: context);
+      var queryCurrentUserPosts =
+          await db.collection("posts").where("user_id", isEqualTo: id).get();
+      provider.initilizeCurrentUserPosts(queryCurrentUserPosts.docs
+          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+          .toList());
+      await provider.initilizeListPost(querySnapshotPost.docs
+          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+          .toList());
+      _initilizeListFreindsUsers(
+          lstFreindsIds: ighoumaneUser.getLstFreindsIds, context: context);
     } catch (e) {
       log("error in intializing  ${e.toString()}");
     }
