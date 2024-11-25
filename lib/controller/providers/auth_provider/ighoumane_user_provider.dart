@@ -1,15 +1,16 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
-import 'package:village_project/model/freind_model.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
+import 'package:village_project/model/user_ighoumane_freind.dart';
 
 class IghoumaneUserProvider extends ChangeNotifier {
   late IghoumaneUser ighoumaneUser;
   List<IghoumaneUserPost>? lstAllPosts;
-  late List<FreindModel> lstFreinds;
+  late List<UserIghoumaneFreind> lstFreinds;
+  late List<IghoumaneUserPost> currentUserPosts;
   int searchItemCount = 20;
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
@@ -19,11 +20,16 @@ class IghoumaneUserProvider extends ChangeNotifier {
       await initilizeListPost(
           snapshot.docs.map((el) {
             return IghoumaneUserPost.getPostFromQuerySnapshot(el);
-          }).toList(),
-          context);
+          }).toList());
       //await  UserServices.getReactionsTypeFromPost(context: context);
       notifyListeners();
     });
+  }
+
+  void updateFreindsIds({required String id}) {
+    lstFreinds.removeWhere((item) => item.getId == id);
+    ighoumaneUser.getLstFreindsIds.removeWhere((item) => item == id);
+    notifyListeners();
   }
 
   void initilizeIghoumaneUser(IghoumaneUser ighoumaneUser) {
@@ -31,13 +37,18 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void initilizeCurrentUserPosts(List<IghoumaneUserPost> lstPosts) {
+    currentUserPosts = lstPosts;
+    notifyListeners();
+  }
+
   Future<void> initilizeListPost(
-      List<IghoumaneUserPost> lstPosts, BuildContext context) async {
+      List<IghoumaneUserPost> lstPosts) async {
     lstAllPosts = lstPosts;
     notifyListeners();
   }
 
-  void initilizeListFreinds(List<FreindModel> lstFreinds) {
+  void initilizeListFreinds(List<UserIghoumaneFreind> lstFreinds) {
     this.lstFreinds = lstFreinds;
     notifyListeners();
   }
@@ -53,13 +64,19 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateListPosts(IghoumaneUserPost ighoumaneUserPost) {
-    lstAllPosts!.add(ighoumaneUserPost);
+  void updateIghoumaneUserLstFreindIds({required List<String> lstFreindIds}) {
+    ighoumaneUser.setLstFreindIds = lstFreindIds;
     notifyListeners();
   }
 
-  void updateListFreinds(FreindModel freindModel) {
+  void updateListPosts(IghoumaneUserPost ighoumaneUserPost) {
+    lstAllPosts!.insert(0, ighoumaneUserPost);
+    notifyListeners();
+  }
+
+  void addToListFreinds(UserIghoumaneFreind freindModel) {
     lstFreinds.add(freindModel);
+    ighoumaneUser.getLstFreindsIds.add(freindModel.getId);
     notifyListeners();
   }
 

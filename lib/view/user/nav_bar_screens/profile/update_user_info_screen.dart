@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,8 @@ class UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
   late IghoumaneUserProvider ighoumaneUserProvider;
   @override
   void initState() {
-    ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context, listen: false);
+    ighoumaneUserProvider =
+        Provider.of<IghoumaneUserProvider>(context, listen: false);
     firstName.text = ighoumaneUserProvider.ighoumaneUser.getFirstName;
     lastName.text = ighoumaneUserProvider.ighoumaneUser.getLastName;
     description.text = ighoumaneUserProvider.ighoumaneUser.getDescription;
@@ -62,6 +64,7 @@ class UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
                 //  style: TextStyle(
                 //    fontWeight: FontWeight.bold,
                 //  ),
+
                 //),
                 formField(
                     width,
@@ -123,40 +126,68 @@ class UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
                             IghoumaneUser updateIghoumaneUser = IghoumaneUser(
                                 firstName: fNameValue,
                                 lastName: lNameValue,
-                                phoneNumber: ighoumaneUserProvider.ighoumaneUser.getPhoneNumber,
-                                createAt: ighoumaneUserProvider.ighoumaneUser.getCreatedDate,
-                                password: ighoumaneUserProvider.ighoumaneUser.getPassword);
-                            updateIghoumaneUser.setDescription = descriptionValue;
+                                phoneNumber: ighoumaneUserProvider
+                                    .ighoumaneUser.getPhoneNumber,
+                                createAt: ighoumaneUserProvider
+                                    .ighoumaneUser.getCreatedDate,
+                                password: ighoumaneUserProvider
+                                    .ighoumaneUser.getPassword,
+                                lstFreindsIds: ighoumaneUserProvider
+                                    .ighoumaneUser.getLstFreindsIds);
+                            updateIghoumaneUser.setDescription =
+                                descriptionValue;
                             updateIghoumaneUser.setUserId =
                                 ighoumaneUserProvider.ighoumaneUser.getUserId;
-                           ighoumaneUserProvider.updateIghoumaneUser(updateIghoumaneUser);
+                            ighoumaneUserProvider
+                                .updateIghoumaneUser(updateIghoumaneUser);
                             UserServices.updateUserInfo(
                                 context: context,
                                 ighoumaneUser: updateIghoumaneUser);
                           } catch (e) {
-                            print("error in update user ${e.toString()}");
+                            log("error in update user ${e.toString()}");
                           }
                         }
                       },
                       buttonWidth: width * 0.4),
                 ),
                 Usefulfunctions.blankSpace(width: 0, height: height * 0.03),
-                Center(
-                    child: TextButton.icon(
+                TextButton.icon(
                   onPressed: () {
-                    log("delete");
+                      FirebaseAuth.instance.signOut();
                   },
                   label: const Text(
-                    "account",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 19, color: red),
+                    "Logout",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, color: black38),
                   ),
-                  icon: Icon(
-                    Icons.delete,
-                    color: red,
-                    size: width * 0.1,
+                  icon: const Icon(
+                    Icons.logout,
+                    color: black38,
                   ),
-                ))
+                ),
+                //TextButton.icon(
+                //  onPressed: () {
+                //    log("delete");
+                //  },
+                //  label: const Text(
+                //    "account",
+                //    style: TextStyle(fontWeight: FontWeight.bold, color: red),
+                //  ),
+                //  icon: const Icon(
+                //    Icons.delete,
+                //    color: red,
+                //    //size: width * 0.1,
+                //  ),
+                //),
+                TextButton.icon(
+                  onPressed: () {
+                    log("versions");
+                  },
+                  label: const Text(
+                    "Version: 1.0.0",
+                    style: TextStyle(fontWeight: FontWeight.bold, color: black38),
+                  ),
+                ),
               ],
             )),
       )),

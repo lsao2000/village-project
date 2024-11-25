@@ -7,19 +7,24 @@ class IghoumaneUser {
   late final String _phoneNumber;
   late final DateTime _createdAt;
   late final String _password;
+  late List<String> _lstFreindsIds;
   String _description = "";
-  IghoumaneUser({
-    //required String userId,
-    required String firstName,
-    required String lastName,
-    required String phoneNumber,
-    required DateTime createAt,
-    required String password,
-  })  : _firstName = firstName,
+  IghoumaneUser(
+      {
+      //required String userId,
+      required String firstName,
+      required String lastName,
+      required String phoneNumber,
+      required DateTime createAt,
+      required String password,
+      required List<String> lstFreindsIds})
+      : _firstName = firstName,
         _lastName = lastName,
         _phoneNumber = phoneNumber,
         _password = password,
+        _lstFreindsIds = lstFreindsIds,
         _createdAt = createAt;
+  IghoumaneUser.basicInfo(this._firstName, this._lastName);
   Map<String, dynamic> toMap() {
     return {
       "user_id": _userId,
@@ -31,7 +36,8 @@ class IghoumaneUser {
       "description": _description
     };
   }
-  IghoumaneUser.fromMap(Map<String, dynamic> data){
+
+  IghoumaneUser.fromMap(Map<String, dynamic> data) {
     _firstName = data["firstName"];
     _lastName = data["lastName"];
     _userId = data["user_id"];
@@ -39,6 +45,8 @@ class IghoumaneUser {
     _createdAt = date.toDate();
     _password = "";
     _phoneNumber = "";
+    _lstFreindsIds =
+        data["freinds"] is Iterable ? List<String>.from(data["freinds"]) : [];
   }
 
   IghoumaneUser.getUserFromQuerySnapshot(
@@ -50,17 +58,23 @@ class IghoumaneUser {
     _createdAt = date.toDate();
     _password = "";
     _phoneNumber = "";
+    _lstFreindsIds = user["freinds"] ?? [];
   }
   set setUserId(String userId) {
     _userId = userId;
   }
 
-  String get getDescription => _description;
   set setDescription(String descrpiton) {
     _description = descrpiton;
   }
 
+  set setLstFreindIds(List<String> freindIds) {
+    _lstFreindsIds = freindIds;
+  }
+
+  List<String> get getLstFreindsIds => _lstFreindsIds;
   String get getPassword => _password;
+  String get getDescription => _description;
   String get getUserId => _userId;
   String get getFirstName => _firstName;
   String get getLastName => _lastName;

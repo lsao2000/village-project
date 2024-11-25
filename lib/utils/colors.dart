@@ -10,5 +10,5 @@ const white = Colors.white;
 const lowWhite = Colors.white38;
 const black = Colors.black;
 const black38 = Colors.black38;
-const red = Colors.red;
 const lightGrey = Color(0xFFEEECE7);
+const grey = Colors.grey;

@@ -94,7 +94,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             TextSpan(
                                 text:
-                                    "${ighoumaneUserProvider.lstAllPosts?.where((el) => el.getUserId == ighoumaneUser.getUserId).length}\n"),
+                                    //"${ighoumaneUser.getLstFreindsIds.length}",),
+                                    "${ighoumaneUserProvider.currentUserPosts.length}\n"),
                             const TextSpan(text: "Posts"),
                           ])),
                   Usefulfunctions.blankSpace(width: width * 0.1, height: 0),
@@ -107,8 +108,10 @@ class ProfileScreenState extends State<ProfileScreen> {
                               fontWeight: FontWeight.bold),
                           children: [
                             TextSpan(
-                                text:
-                                    "${ighoumaneUserProvider.lstFreinds.length}\n"),
+                              text:
+                                  "${ighoumaneUser.getLstFreindsIds.length}\n",
+                            ),
+                            //"${ighoumaneUserProvider.lstFreinds.length}\n"),
                             const TextSpan(text: "Freinds"),
                           ])),
                 ],
@@ -161,11 +164,12 @@ class ProfileScreenState extends State<ProfileScreen> {
         ),
         // post section for displaying all post of current user.
         Builder(builder: (ctx) {
-          int postCount = ighoumaneUserProvider.lstAllPosts
-                  ?.where((el) => el.getUserId == ighoumaneUser.getUserId)
-                  .toList()
-                  .length ??
-              0;
+          //int postCount = ighoumaneUserProvider.lstAllPosts
+          //        ?.where((el) => el.getUserId == ighoumaneUser.getUserId)
+          //        .toList()
+          //        .length ??
+          //    0;
+          int postCount = ighoumaneUserProvider.currentUserPosts.length;
           if (postCount == 0) {
             return Expanded(
               child: Container(
@@ -199,7 +203,6 @@ class ProfileScreenState extends State<ProfileScreen> {
       print("error geting id ${e.toString()}");
     }
   }
-
 
   String getDateFormat(DateTime dateFormated) {
     IghoumaneUser ighoumaneUser =
@@ -252,7 +255,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         child: StreamBuilder(
             stream: UsersPostServices.getCurrentUserPosts(userId: userId),
             builder: (ctx, snapshot) {
-                if (snapshot.hasData) {
+              if (snapshot.hasData) {
                 List<IghoumaneUserPost> lstPosts = snapshot.data!.docs
                     .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
                     .toList();
@@ -312,10 +315,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                                     onSelected: (value) {
                                       if (value == "delete") {
                                         log("delete post");
+                                        //String userId
                                         String postId =
                                             ighoumaneUserPost.postId!;
                                         UserServices.deletePost(
-                                            context: context, postId: postId);
+                                            context: context,
+                                            postId: postId,
+                                            userId: userId);
                                       }
                                     },
                                     itemBuilder: (context) => [
@@ -527,14 +533,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               }
-               return Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "No post",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black12,
-                        fontSize: width * 0.1),
+              return Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "No post",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black12,
+                      fontSize: width * 0.1),
                 ),
               );
             }));

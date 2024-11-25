@@ -31,8 +31,6 @@ class IghoumaneUserPost {
     postId = post.id;
     Timestamp postDate = post["created_at"];
     _createdAt = postDate.toDate();
-    //updateReactions(context, post.id);
-    //var reaction_list = post["reaction_type"];
   }
   getReactionsTypeFromQuery(
       QueryDocumentSnapshot<Map<String, dynamic>> reactions) {

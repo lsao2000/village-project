@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
+import 'package:village_project/model/user.dart';
 
 class UsersPostServices {
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllPosts() {
@@ -15,7 +16,6 @@ class UsersPostServices {
         .doc(postId)
         .collection("reaction_type")
         .snapshots();
-    //return
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getCurrentUserPosts(
@@ -24,5 +24,12 @@ class UsersPostServices {
         .collection("posts")
         .where("user_id", isEqualTo: userId)
         .snapshots();
+  }
+
+  static Future<IghoumaneUser> getPosterInfo({required String userId}) async {
+    var data = await db.collection("users").doc(userId).get();
+    IghoumaneUser ighoumaneUser =
+        IghoumaneUser.basicInfo(data["firstName"], data["lastName"]);
+    return ighoumaneUser;
   }
 }

@@ -45,11 +45,6 @@ class HomeState extends State<Home> {
               postCount: value.lstAllPosts!.length,
               height: height,
               width: width);
-          //return ListView.builder(
-          //    itemCount: value.lstAllPosts!.length,
-          //    itemBuilder: (context, index) {
-          //      //return Text("hell");
-          //    });
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -74,233 +69,230 @@ class HomeState extends State<Home> {
       itemBuilder: (ctx, index) {
         IghoumaneUserPost ighoumaneUserPost =
             ighoumaneUserProvider.lstAllPosts![index];
-        return Container(
-          decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: deepBlue))),
-          padding: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * .03),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(width * 0.4),
-                    child: Image(
-                      fit: BoxFit.cover,
-                      image: const AssetImage("assets/images/youghmane.png"),
-                      width: width * 0.1,
-                      height: height * 0.05,
-                    ),
-                  ),
-                  SizedBox(
-                    width: height * 0.01,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        //IghoumaneUser userPoster = UsersPostServices.getPosterInfo(
+        //    userId: ighoumaneUserPost.getUserId);
+        //    .then((value) {
+        //  userPoster = value;
+        //});
+        //    ighoumaneUserProvider.lstAllPosts![index].postId;
+        return FutureBuilder(
+            future: UsersPostServices.getPosterInfo(
+                userId: ighoumaneUserPost.getUserId),
+            builder: (ctx, data) {
+                IghoumaneUser? userPoster = data.data;
+              return Container(
+                decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: deepBlue))),
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * .03),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Text(
-                          "${ighoumaneUserProvider.ighoumaneUser.getFirstName} ${ighoumaneUserProvider.ighoumaneUser.getLastName}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(width * 0.4),
+                          child: Image(
+                            fit: BoxFit.cover,
+                            image:
+                                const AssetImage("assets/images/youghmane.png"),
+                            width: width * 0.1,
+                            height: height * 0.05,
+                          ),
                         ),
-                        Text(
-                          getDateFormat(ighoumaneUserPost.getCreatedAt),
-                          //"ls",
-                          style: const TextStyle(
-                              color: black38,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold),
+                        SizedBox(
+                          width: height * 0.01,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                //"",
+                                //"${userPoster?.getFirstName}",
+                                "${userPoster?.getFirstName} ${userPoster?.getLastName}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              Text(
+                                //"29",
+                                getDateFormat(ighoumaneUserPost.getCreatedAt),
+                                style: const TextStyle(
+                                    color: black38,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  //PopupMenuButton(
-                  //    icon: const Icon(Icons.more_vert),
-                  //    onSelected: (value) {
-                  //      if (value == "delete") {
-                  //        log("delete post");
-                  //        String postId = ighoumaneUserPost.postId!;
-                  //        UserServices.deletePost(
-                  //            context: context, postId: postId);
-                  //      }
-                  //    },
-                  //    itemBuilder: (context) => [
-                  //          PopupMenuItem(
-                  //            value: "delete",
-                  //            child: const ListTile(
-                  //              title: Text('Delete'),
-                  //              //trailing: Icon(Icons),
-                  //              contentPadding: EdgeInsets.zero,
-                  //            ),
-                  //            onTap: () {},
-                  //          )
-                  //        ]),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.01),
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: ighoumaneUserPost.getContent,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                        )),
-                  ]),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+                      child: RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text: ighoumaneUserPost.getContent,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                              )),
+                        ]),
+                      ),
+                    ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    StreamBuilder(
+                      stream: UsersPostServices.getAllReactionsOfPost(
+                          postId: ighoumaneUserPost.postId!),
+                      builder: (ctx, snapshot) {
+                        if (snapshot.hasData) {
+                          List<ReactionType> lstReactions = snapshot.data!.docs
+                              .map((el) => ReactionType.fromQuerySnapshots(
+                                  reactions: el))
+                              .toList();
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(
+                                    top: height * 0.008, left: width * 0.01),
+                                child: Text(
+                                  "${lstReactions.where((el) => el.getType == "like").length}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * 0.02,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  String postId = ighoumaneUserPost.postId!;
+                                  UserServices.checkIfReactionExist(
+                                      context: context,
+                                      postId: postId,
+                                      type: "like",
+                                      userId: ighoumaneUserProvider
+                                          .ighoumaneUser.getUserId);
+                                },
+                                child: Icon(
+                                  Icons.thumb_up,
+                                  color: isLikeOrDislike("like", lstReactions)
+                                      ? deepBlue
+                                      : black,
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * 0.08,
+                              ),
+                              Text(
+                                "${lstReactions.where((el) => el.getType == "dislike").length}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: width * 0.02,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  String postId = ighoumaneUserPost.postId!;
+                                  UserServices.checkIfReactionExist(
+                                      context: context,
+                                      postId: postId,
+                                      type: "dislike",
+                                      userId: ighoumaneUserProvider
+                                          .ighoumaneUser.getUserId);
+                                },
+                                child: Icon(
+                                  Icons.thumb_down,
+                                  color:
+                                      isLikeOrDislike("dislike", lstReactions)
+                                          ? desertOrange
+                                          : black,
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                  top: height * 0.008, left: width * 0.01),
+                              child: const Text(
+                                "0",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            SizedBox(
+                              width: width * 0.02,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                String postId = ighoumaneUserPost.postId!;
+                                UserServices.checkIfReactionExist(
+                                    context: context,
+                                    postId: postId,
+                                    type: "like",
+                                    userId: ighoumaneUserProvider
+                                        .ighoumaneUser.getUserId);
+                              },
+                              child: const Icon(
+                                Icons.thumb_up,
+                                color: black,
+                              ),
+                            ),
+                            SizedBox(
+                              width: width * 0.08,
+                            ),
+                            const Text(
+                              "0",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: width * 0.02,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                String postId = ighoumaneUserPost.postId!;
+                                UserServices.checkIfReactionExist(
+                                    context: context,
+                                    postId: postId,
+                                    type: "dislike",
+                                    userId: ighoumaneUserProvider
+                                        .ighoumaneUser.getUserId);
+                              },
+                              child: const Icon(
+                                Icons.thumb_down,
+                                color: black,
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              StreamBuilder(
-                stream: UsersPostServices.getAllReactionsOfPost(
-                    postId: ighoumaneUserPost.postId!),
-                builder: (ctx, snapshot) {
-                  if (snapshot.hasData) {
-                    List<ReactionType> lstReactions = snapshot.data!.docs
-                        .map((el) =>
-                            ReactionType.fromQuerySnapshots(reactions: el))
-                        .toList();
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                              top: height * 0.008, left: width * 0.01),
-                          child: Text(
-                            "${lstReactions.where((el) => el.getType == "like").length}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        SizedBox(
-                          width: width * 0.02,
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            String postId = ighoumaneUserPost.postId!;
-                            UserServices.checkIfReactionExist(
-                                context: context,
-                                postId: postId,
-                                type: "like",
-                                userId: ighoumaneUserProvider
-                                    .ighoumaneUser.getUserId);
-                          },
-                          child: Icon(
-                            Icons.thumb_up,
-                            color: isLikeOrDislike("like", lstReactions)
-                                ? deepBlue
-                                : black,
-                          ),
-                        ),
-                        SizedBox(
-                          width: width * 0.08,
-                        ),
-                        Text(
-                          "${lstReactions.where((el) => el.getType == "dislike").length}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: width * 0.02,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            String postId = ighoumaneUserPost.postId!;
-                            UserServices.checkIfReactionExist(
-                                context: context,
-                                postId: postId,
-                                type: "dislike",
-                                userId: ighoumaneUserProvider
-                                    .ighoumaneUser.getUserId);
-                          },
-                          child: Icon(
-                            Icons.thumb_down,
-                            color: isLikeOrDislike("dislike", lstReactions)
-                                ? desertOrange
-                                : black,
-                          ),
-                        )
-                      ],
-                    );
-                  }
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            top: height * 0.008, left: width * 0.01),
-                        child: const Text(
-                          "0",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(
-                        width: width * 0.02,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          String postId = ighoumaneUserPost.postId!;
-                          UserServices.checkIfReactionExist(
-                              context: context,
-                              postId: postId,
-                              type: "like",
-                              userId: ighoumaneUserProvider
-                                  .ighoumaneUser.getUserId);
-                        },
-                        child: const Icon(
-                          Icons.thumb_up,
-                          color: black,
-                        ),
-                      ),
-                      SizedBox(
-                        width: width * 0.08,
-                      ),
-                      const Text(
-                        "0",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: width * 0.02,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          String postId = ighoumaneUserPost.postId!;
-                          UserServices.checkIfReactionExist(
-                              context: context,
-                              postId: postId,
-                              type: "dislike",
-                              userId: ighoumaneUserProvider
-                                  .ighoumaneUser.getUserId);
-                        },
-                        child: const Icon(
-                          Icons.thumb_down,
-                          color: black,
-                        ),
-                      )
-                    ],
-                  );
-                },
-              ),
-            ],
-          ),
-        );
+              );
+            });
       },
     );
   }
 
   String getDateFormat(DateTime dateFormated) {
-    IghoumaneUser ighoumaneUser =
-        Provider.of<IghoumaneUserProvider>(context).ighoumaneUser;
-    int year = ighoumaneUser.getCreatedDate.year;
-    int month = ighoumaneUser.getCreatedDate.month;
-    String day = ighoumaneUser.getCreatedDate.day > 9
-        ? ighoumaneUser.getCreatedDate.day.toString()
-        : "0${ighoumaneUser.getCreatedDate.day}";
+    //IghoumaneUser ighoumaneUser =
+    //    Provider.of<IghoumaneUserProvider>(context).ighoumaneUser;
+    int year = dateFormated.year;
+    int month = dateFormated.month;
+    String day = dateFormated.day > 9
+        ? dateFormated.day.toString()
+        : "0${dateFormated.day}";
     return "$day-$month-$year";
   }
 

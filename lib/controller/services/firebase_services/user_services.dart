@@ -33,9 +33,12 @@ class UserServices {
       DateTime creationDate = DateTime.now();
       IghoumaneUserPost ighoumaneUserPost = IghoumaneUserPost(
           content: content, userId: userId, createdAt: creationDate);
-      await db.collection("posts").doc().set(ighoumaneUserPost.toMap());
-      //Provider.of<IghoumaneUserProvider>(context, listen: false)
-      //    .updateListPosts(ighoumaneUserPost);
+      await db.collection("posts").add(ighoumaneUserPost.toMap()).then((doc) {
+        ighoumaneUserPost.postId = doc.id;
+      });
+
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .updateListPosts(ighoumaneUserPost);
       Navigator.of(context).pop();
     } catch (e) {
       log("failed to add post ${e.toString()}");
@@ -145,59 +148,34 @@ class UserServices {
     }
   }
 
-  //static Future<List<IghoumaneUserPost>> getListPost(
-  //    {required String userId, required BuildContext context}) async {
-  //  try {
-  //    var querySnapshot = await db
-  //        .collection("posts")
-  //        .where("user_id", isEqualTo: userId)
-  //        .get();
-  //    List<IghoumaneUserPost> lstPosts = querySnapshot.docs.map((el) {
-  //      IghoumaneUserPost ighoumaneUserPost =
-  //          IghoumaneUserPost.getPostFromQuerySnapshot(el, context);
-  //      //getReactionsTypeFromPost(postId: ighoumaneUserPost.postId!)
-  //      //    .then((value) async {
-  //      //  ighoumaneUserPost.setListReactinos = value;
-  //      //});
-  //      return ighoumaneUserPost;
-  //    }).toList();
-  //    Provider.of<IghoumaneUserProvider>(context, listen: false)
-  //        .initilizeListPost(lstPosts, context);
-  //    return lstPosts;
-  //  } catch (e) {
-  //    log("failed to initialize user posts ${e.toString()}");
-  //    return [];
-  //  }
-  //}
-
   static Future<List<ReactionType>> getReactionsTypeFromPost(
       {required BuildContext context, required String id}) async {
-    //var lstPosts = context.read<IghoumaneUserProvider>().lstPosts;
-    //lstPosts.map((el) async {
     var reactionsQuery =
         await db.collection("posts").doc(id).collection("reaction_type").get();
     List<ReactionType> reactionTypes = reactionsQuery.docs
         .map((el) => ReactionType.fromQuerySnapshots(reactions: el))
         .toList();
-    //Provider.of<IghoumaneUserProvider>(context)
-    //    .getPostReactions(reactionTypes, lstPosts.indexOf(el));
     return reactionTypes;
-    //});
   }
 
   static deletePost(
-      {required BuildContext context, required String postId}) async {
+      {required BuildContext context,
+      required String postId,
+      required String userId}) async {
     try {
       var postCollection = db.collection("posts");
       postCollection.doc(postId).delete();
       var lstPosts = await postCollection.get();
-      //;
+      var currentUserPosts =
+          await postCollection.where("user_id", isEqualTo: userId).get();
       Provider.of<IghoumaneUserProvider>(context, listen: false)
-          .initilizeListPost(
-              lstPosts.docs
-                  .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-                  .toList(),
-              context);
+          .initilizeCurrentUserPosts(currentUserPosts.docs
+              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .toList());
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .initilizeListPost(lstPosts.docs
+              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+              .toList());
     } catch (e) {
       log("failed to delete post ${e.toString()}");
     }
