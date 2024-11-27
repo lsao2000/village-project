@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
+import 'package:village_project/controller/services/firebase_services/post_services/users_post_services.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/utils/colors.dart';
 
@@ -124,7 +125,7 @@ class AddPostScreenState extends State<AddPostScreen> {
                           if (_fromKey.currentState?.validate() ?? false) {
                             String contentValue =
                                 content.text.trim().toString();
-                            UserServices.addPost(
+                            UsersPostServices.addPost(
                                 content: contentValue, context: context);
                           }
                         },

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +11,6 @@ import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/user/nav_bar_screens/profile/update_user_info_screen.dart';
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
   @override
@@ -318,7 +316,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                         //String userId
                                         String postId =
                                             ighoumaneUserPost.postId!;
-                                        UserServices.deletePost(
+                                        UsersPostServices.deletePost(
                                             context: context,
                                             postId: postId,
                                             userId: userId);
@@ -403,7 +401,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                             log(lstReactions.length.toString());
                                             isLikeOrDislike(
                                                 "dislike", lstReactions);
-                                            UserServices.checkIfReactionExist(
+                                            UsersPostServices.checkIfReactionExist(
                                                 context: context,
                                                 postId: postId,
                                                 type: "like",
@@ -435,7 +433,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                           onTap: () {
                                             String postId =
                                                 ighoumaneUserPost.postId!;
-                                            UserServices.checkIfReactionExist(
+                                            UsersPostServices.checkIfReactionExist(
                                                 context: context,
                                                 postId: postId,
                                                 type: "dislike",
@@ -477,7 +475,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                                 ighoumaneUserPost.postId!;
                                             //log(ighoumaneUserPost.getLstReactions.length.toString());
                                             //var posts = await db.collection("posts").doc(postId).get() ;
-                                            UserServices.checkIfReactionExist(
+                                            UsersPostServices.checkIfReactionExist(
                                                 context: context,
                                                 postId: postId,
                                                 type: "like",
@@ -505,7 +503,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                           onTap: () {
                                             String postId =
                                                 ighoumaneUserPost.postId!;
-                                            UserServices.checkIfReactionExist(
+                                            UsersPostServices.checkIfReactionExist(
                                                 context: context,
                                                 postId: postId,
                                                 type: "dislike",
