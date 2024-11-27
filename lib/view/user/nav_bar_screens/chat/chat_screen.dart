@@ -20,6 +20,7 @@ class ChatScreenState extends State<ChatScreen> {
     double height = MediaQuery.of(context).size.height;
     List<UserIghoumaneFreind> lstAllFreindUser =
         Provider.of<IghoumaneUserProvider>(context).lstFreinds;
+    //return StreamBuilder(stream: , builder:)
     return ListView.builder(
         itemCount: lstAllFreindUser.length,
         itemBuilder: (ctx, index) {

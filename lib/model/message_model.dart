@@ -12,6 +12,23 @@ class MessageModel {
         _sendingAt = sendingTime,
         _text = text,
         _senderId = senderId;
+  MessageModel.toAddInFirestore(
+      {required String senderId,
+      required String text,
+      required DateTime sendingTime})
+      : _sendingAt = sendingTime,
+        _text = text,
+        _senderId = senderId;
+
+  MessageModel.fromQuerySnapshot(
+      {required String messageId,
+      required String senderId,
+      required String text,
+      required DateTime sendingTime})
+      : _messageId = messageId,
+        _sendingAt = sendingTime,
+        _text = text,
+        _senderId = senderId;
   Map<String, dynamic> toMap() {
     return {"senderId": _senderId, "msgText": _text, "sendingTime": _sendingAt};
   }

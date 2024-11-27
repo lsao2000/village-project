@@ -1,10 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/firebase_services/post_services/users_post_services.dart';
-import 'package:village_project/controller/services/firebase_services/user_services.dart';
+//import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
@@ -79,7 +78,7 @@ class HomeState extends State<Home> {
             future: UsersPostServices.getPosterInfo(
                 userId: ighoumaneUserPost.getUserId),
             builder: (ctx, data) {
-                IghoumaneUser? userPoster = data.data;
+              IghoumaneUser? userPoster = data.data;
               return Container(
                 decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(color: deepBlue))),
@@ -173,7 +172,7 @@ class HomeState extends State<Home> {
                               InkWell(
                                 onTap: () async {
                                   String postId = ighoumaneUserPost.postId!;
-                                  UserServices.checkIfReactionExist(
+                                  UsersPostServices.checkIfReactionExist(
                                       context: context,
                                       postId: postId,
                                       type: "like",
@@ -201,7 +200,7 @@ class HomeState extends State<Home> {
                               InkWell(
                                 onTap: () {
                                   String postId = ighoumaneUserPost.postId!;
-                                  UserServices.checkIfReactionExist(
+                                  UsersPostServices.checkIfReactionExist(
                                       context: context,
                                       postId: postId,
                                       type: "dislike",
@@ -236,7 +235,7 @@ class HomeState extends State<Home> {
                             InkWell(
                               onTap: () async {
                                 String postId = ighoumaneUserPost.postId!;
-                                UserServices.checkIfReactionExist(
+                               UsersPostServices.checkIfReactionExist(
                                     context: context,
                                     postId: postId,
                                     type: "like",
@@ -261,7 +260,7 @@ class HomeState extends State<Home> {
                             InkWell(
                               onTap: () {
                                 String postId = ighoumaneUserPost.postId!;
-                                UserServices.checkIfReactionExist(
+                           UsersPostServices.checkIfReactionExist(
                                     context: context,
                                     postId: postId,
                                     type: "dislike",

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:village_project/controller/services/firebase_services/user_services.dart';
+import 'package:village_project/controller/services/firebase_services/post_services/users_post_services.dart';
 import 'package:village_project/model/reaction_type.dart';
 
 class IghoumaneUserPost {
@@ -38,8 +38,10 @@ class IghoumaneUserPost {
         userId: reactions["reacter_id"], type: reactions["react_type"]);
     _lstReaction.add(reactionType);
   }
-  updateReactions(BuildContext context, String id) async{
-    _lstReaction = await UserServices.getReactionsTypeFromPost(context: context, id: id);
+
+  updateReactions(BuildContext context, String id) async {
+    _lstReaction = await UsersPostServices.getReactionsTypeFromPost(
+        context: context, id: id);
   }
 
   set setListReactinos(List<ReactionType> lstReactions) {
