@@ -20,7 +20,7 @@ class MessagingScreenState extends State<MessagingScreen> {
   TextEditingController msgController = TextEditingController();
   late IghoumaneUserProvider ighoumaneUserProvider;
   late List<MessageModel> lstMessages;
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     setState(() {
@@ -206,11 +206,11 @@ class MessagingScreenState extends State<MessagingScreen> {
                       : InkWell(
                           onTap: () {
                             if (_formKey.currentState!.validate()) {
-                              //ChatServices.checkIfChatExist(
-                              //    freindId: widget.freindId,
-                              //    context: context,
-                              //    msgContent: removeExtraSpaces(
-                              //        msgController.text.trim()));
+                              ChatServices.checkIfChatExist(
+                                  freindId: widget.freindId,
+                                  context: context,
+                                  msgContent: removeExtraSpaces(
+                                      msgController.text.trim()));
                               msgController.text = "";
                             }
                           },
@@ -265,107 +265,346 @@ class MessagingScreenState extends State<MessagingScreen> {
           return Container(
             margin: EdgeInsets.only(bottom: height * 0.088),
             child: ListView.builder(
-              itemCount: lstMessagesData.length,
-              itemBuilder: (ctx, index) {
-                MessageModel messageModel = lstMessagesData[index];
-                //double widthT = calculateTextWidth(messageModel.getTextMsg, width);
-                if (currentUserId == messageModel.getSenderId) {
-                  return Align(
-                    alignment: Alignment.topRight,
-                    child: Stack(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(
-                              vertical: height * 0.004,
-                              horizontal: width * 0.02),
-                          padding: EdgeInsets.only(
-                              top: height * 0.005,
-                              bottom: height * 0.005,
-                              left: width * 0.02,
-                              right: width * 0.03),
-                          constraints: BoxConstraints(
-                              maxWidth: width * 0.7), // Limit max width
-                          decoration: BoxDecoration(
-                              color: deepBlueDark,
-                              borderRadius: BorderRadius.circular(6)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisSize: MainAxisSize
-                                .min, // Minimize the size to fit content
-                            children: [
-                              Container(
-                                  margin: EdgeInsets.only(
-                                    right: width * 0.04,
-                                  ),
-                                  child: Text(
-                                    messageModel.getTextMsg,
-                                    style: const TextStyle(
-                                        color: white,
+                itemCount: lstMessagesData.length,
+                itemBuilder: (ctx, index) {
+                  MessageModel messageModel = lstMessagesData[index];
+                  //double widthT = calculateTextWidth(messageModel.getTextMsg, width);
+                  // check if index is 0 and display the date
+                  if (index == 0) {
+                    DateTime currentDate = DateTime.now();
+                    // chek if message date day is the same day
+                    if (messageModel.getSendingTime.day
+                            .compareTo(currentDate.day) ==
+                        0) {
+                      // chek  if the message is from the current use
+                      if (currentUserId == messageModel.getSenderId) {
+                        return Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.03,
+                                      vertical: height * 0.001),
+                                  decoration: BoxDecoration(
+                                      color: lightGrey,
+                                      borderRadius:
+                                          BorderRadius.circular(width * 0.1)),
+                                  child: const Text(
+                                    "Today",
+                                    style: TextStyle(
+                                        color: black38,
                                         fontWeight: FontWeight.bold),
-                                  )),
-                              SizedBox(
-                                  height:
-                                      height * 0.005), // Space before timestamp
-                              Text(
-                                "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return Stack(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: height * 0.004, horizontal: width * 0.02),
-                      padding: EdgeInsets.only(
-                          top: height * 0.005,
-                          bottom: height * 0.005,
-                          left: width * 0.02,
-                          right: width * 0.03),
-                      constraints: BoxConstraints(maxWidth: width * 0.8),
-                      decoration: BoxDecoration(
-                          color: lightGrey,
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize
-                            .min, // Minimize the size to fit content
+                                  ),
+                                )),
+                            freindMessageView(
+                                width: width,
+                                height: height,
+                                messageModel: messageModel,
+                                currentUserId: true)
+                          ],
+                        );
+                      }
+                      // the message is not from the current use
+                      return Column(
                         children: [
-                          Container(
-                              margin: EdgeInsets.only(
-                                right: width * 0.04,
-                              ),
-                              child: Text(
-                                messageModel.getTextMsg,
-                                style: const TextStyle(
-                                    color: black, fontWeight: FontWeight.bold),
+                          Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: height * 0.01),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.001),
+                                decoration: BoxDecoration(
+                                    color: lightGrey,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.1)),
+                                child: const Text(
+                                  "Today",
+                                  style: TextStyle(
+                                      color: black38,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               )),
-                          SizedBox(
-                              height: height * 0.005), // Space before timestamp
-                          Text(
-                            "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: black,
-                            ),
-                          ),
+                          freindMessageView(
+                              width: width,
+                              height: height,
+                              messageModel: messageModel,
+                              currentUserId: false)
                         ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+                      );
+                    }
+                    // if meesage date day is not the same day
+                    else {
+                      // chek if the message is from the current user
+                      if (currentUserId == messageModel.getSenderId) {
+                        return Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.03,
+                                      vertical: height * 0.001),
+                                  decoration: BoxDecoration(
+                                      color: lightGrey,
+                                      borderRadius:
+                                          BorderRadius.circular(width * 0.1)),
+                                  child: Text(
+                                    Usefulfunctions.getDateFormat(
+                                        dateFormated: lstMessagesData[index + 1]
+                                            .getSendingTime,
+                                        context: context),
+                                    style: const TextStyle(
+                                        color: black38,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )),
+                            freindMessageView(
+                                width: width,
+                                height: height,
+                                messageModel: messageModel,
+                                currentUserId: true)
+                          ],
+                        );
+                      }
+                      //  if the message is not from the current user
+                      return Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: height * 0.01),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.001),
+                                decoration: BoxDecoration(
+                                    color: lightGrey,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.1)),
+                                child: Text(
+                                  Usefulfunctions.getDateFormat(
+                                      dateFormated: lstMessagesData[index + 1]
+                                          .getSendingTime,
+                                      context: context),
+                                  style: const TextStyle(
+                                      color: black38,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                          freindMessageView(
+                              width: width,
+                              height: height,
+                              messageModel: messageModel,
+                              currentUserId: false)
+                        ],
+                      );
+                    }
+                  }
+                  // if the index is not equal to 0
+                  else {
+                    DateTime currentDate = DateTime.now();
+                    if (index - 1 >= 0 &&
+                        lstMessagesData[index].getSendingTime.day ==
+                            lstMessagesData[index - 1].getSendingTime.day) {
+                      // chek  if the message is from the current use
+                      if (currentUserId == messageModel.getSenderId) {
+                        return Column(
+                          children: [
+                            freindMessageView(
+                                width: width,
+                                height: height,
+                                messageModel: messageModel,
+                                currentUserId: true)
+                          ],
+                        );
+                      }
+                      // the message is not from the current use
+                      return Column(
+                        children: [
+                          freindMessageView(
+                              width: width,
+                              height: height,
+                              messageModel: messageModel,
+                              currentUserId: false)
+                        ],
+                      );
+                      // chek if the message is from the current user
+                    } else {
+                      if (currentUserId == messageModel.getSenderId) {
+                        return Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.03,
+                                      vertical: height * 0.001),
+                                  decoration: BoxDecoration(
+                                      color: lightGrey,
+                                      borderRadius:
+                                          BorderRadius.circular(width * 0.1)),
+                                  child: Text(
+                                    Usefulfunctions.getDateFormat(
+                                        dateFormated: lstMessagesData[index + 1]
+                                            .getSendingTime,
+                                        context: context),
+                                    style: const TextStyle(
+                                        color: black38,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )),
+                            freindMessageView(
+                                width: width,
+                                height: height,
+                                messageModel: messageModel,
+                                currentUserId: true)
+                          ],
+                        );
+                      }
+                      return Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: height * 0.01),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.001),
+                                decoration: BoxDecoration(
+                                    color: lightGrey,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.1)),
+                                child:const Text(
+                                  "Today",
+                                  style:  TextStyle(
+                                      color: black38,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                          freindMessageView(
+                              width: width,
+                              height: height,
+                              messageModel: messageModel,
+                              currentUserId: false)
+                        ],
+                      );
+                    }
+                  }
+                }),
           );
         });
+  }
+
+  Widget currentUserMessageView(
+      {required double width,
+      required double height,
+      required MessageModel messageModel}) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Stack(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(
+                vertical: height * 0.004, horizontal: width * 0.02),
+            padding: EdgeInsets.only(
+                top: height * 0.005,
+                bottom: height * 0.005,
+                left: width * 0.02,
+                right: width * 0.03),
+            constraints:
+                BoxConstraints(maxWidth: width * 0.7), // Limit max width
+            decoration: BoxDecoration(
+                color: deepBlueDark, borderRadius: BorderRadius.circular(6)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize:
+                  MainAxisSize.min, // Minimize the size to fit content
+              children: [
+                Container(
+                    margin: EdgeInsets.only(
+                      right: width * 0.04,
+                    ),
+                    child: Text(
+                      messageModel.getTextMsg,
+                      style: const TextStyle(
+                          color: white, fontWeight: FontWeight.bold),
+                    )),
+                SizedBox(height: height * 0.005), // Space before timestamp
+                Text(
+                  "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget freindMessageView(
+      {required double width,
+      required double height,
+      required MessageModel messageModel,
+      required bool currentUserId}) {
+    return Align(
+      alignment: currentUserId ? Alignment.topRight : Alignment.topLeft,
+      child: Stack(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(
+                vertical: height * 0.004, horizontal: width * 0.02),
+            padding: EdgeInsets.only(
+                top: height * 0.005,
+                bottom: height * 0.005,
+                left: width * 0.02,
+                right: width * 0.03),
+            constraints: BoxConstraints(maxWidth: width * 0.8),
+            decoration: BoxDecoration(
+                color: currentUserId ? deepBlueDark : lightGrey,
+                borderRadius: BorderRadius.circular(6)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize:
+                  MainAxisSize.min, // Minimize the size to fit content
+              children: [
+                Container(
+                    margin: EdgeInsets.only(
+                      right: width * 0.04,
+                    ),
+                    child: Text(
+                      messageModel.getTextMsg,
+                      style: TextStyle(
+                          color: currentUserId ? white : black,
+                          fontWeight: FontWeight.bold),
+                    )),
+                SizedBox(height: height * 0.005), // Space before timestamp
+                Text(
+                  "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: currentUserId ? white : black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   double calculateTextWidth(String text, double width) {

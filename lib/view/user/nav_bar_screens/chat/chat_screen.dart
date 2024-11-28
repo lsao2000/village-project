@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
+import 'package:village_project/controller/services/firebase_services/chat_services/chat_services.dart';
+import 'package:village_project/model/user.dart';
 import 'package:village_project/model/user_ighoumane_freind.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/user/nav_bar_screens/chat/messaging_screen.dart';
@@ -14,13 +16,22 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> {
+  late IghoumaneUser currentUser;
+  @override
+  void initState() {
+    setState(() {
+      currentUser = Provider.of<IghoumaneUserProvider>(context, listen: false)
+          .ighoumaneUser;
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     List<UserIghoumaneFreind> lstAllFreindUser =
         Provider.of<IghoumaneUserProvider>(context).lstFreinds;
-    //return StreamBuilder(stream: , builder:)
     return ListView.builder(
         itemCount: lstAllFreindUser.length,
         itemBuilder: (ctx, index) {
@@ -95,16 +106,33 @@ class ChatScreenState extends State<ChatScreen> {
                             ],
                           ),
                         ),
-                        Container(
-                          constraints: BoxConstraints(maxWidth: width * 0.7),
-                          child: const Text(
-                            "msg ghir kantisti bih",
-                            style: TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                color: Colors.black45,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )
+                        StreamBuilder(
+                            stream: ChatServices.getLastMessagesFreind(
+                                currentUserId: currentUser.getUserId,
+                                freindId: userIghoumaneFreind.getId),
+                            builder: (ctx, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Text(
+                                  "Loading",
+                                  style: TextStyle(
+                                      color: lightGrey,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              }
+                              var data = snapshot.data!.docs.first;
+                              return Container(
+                                constraints:
+                                    BoxConstraints(maxWidth: width * 0.7),
+                                child: Text(
+                                  data["msgText"].toString(),
+                                  style: const TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: Colors.black45,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              );
+                            }),
                       ],
                     )
                   ],

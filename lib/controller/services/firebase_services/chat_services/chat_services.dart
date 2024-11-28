@@ -94,7 +94,8 @@ class ChatServices {
       required String freindId}) async {
     try {
       List<String> sortedIdsList = [freindId, currentUserId]..sort();
-      var chatDocRef = db.collection("chats").doc("${sortedIdsList[0]}${sortedIdsList[1]}");
+      var chatDocRef =
+          db.collection("chats").doc("${sortedIdsList[0]}${sortedIdsList[1]}");
       MessageModel messageModel = MessageModel.toAddInFirestore(
           senderId: currentUserId,
           text: msgContent,
@@ -112,7 +113,24 @@ class ChatServices {
       {required String currentUserId, required String freindId}) {
     List<String> sortedList = [freindId, currentUserId]..sort();
     String docId = "${sortedList[0]}${sortedList[1]}";
-    return db.collection("chats").doc(docId).collection("messages").snapshots();
+    return db
+        .collection("chats")
+        .doc(docId)
+        .collection("messages")
+        .orderBy("sendingTime")
+        .snapshots();
   }
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessagesFreind(
+      {required String currentUserId, required String freindId}) {
+    List<String> sortedList = [freindId, currentUserId]..sort();
+    String docId = "${sortedList[0]}${sortedList[1]}";
+    return db
+        .collection("chats")
+        .doc(docId)
+        .collection("messages")
+        .orderBy("sendingTime", descending: true)
+        .limit(1)
+        .snapshots();
+  }
 }
