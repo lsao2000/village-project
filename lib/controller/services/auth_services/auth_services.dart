@@ -122,7 +122,6 @@ class AuthServices {
       provider.initilizeIghoumaneUser(ighoumaneUser);
       var querySnapshotPost = await FirebaseFirestore.instance
           .collection("posts")
-          //.where("user_id", isEqualTo: id)
           .get();
       var queryCurrentUserPosts =
           await db.collection("posts").where("user_id", isEqualTo: id).get();
