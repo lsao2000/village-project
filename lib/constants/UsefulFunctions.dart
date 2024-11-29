@@ -14,10 +14,22 @@ class Usefulfunctions {
   static String getDateFormat(
       {required DateTime dateFormated, required BuildContext context}) {
     int year = dateFormated.year;
-    int month = dateFormated.month;
+    String month = dateFormated.month > 9
+        ? dateFormated.month.toString()
+        : "0${dateFormated.month}";
     String day = dateFormated.day > 9
         ? dateFormated.day.toString()
         : "0${dateFormated.day}";
     return "$day-$month-$year";
+  }
+
+  static String getHourMinuteFormat({required DateTime formatingDate}) {
+    String hourDate = formatingDate.hour > 9
+        ? formatingDate.hour.toString()
+        : "0${formatingDate.hour}";
+    String minuteDate = formatingDate.minute > 9
+        ? formatingDate.minute.toString()
+        : "0${formatingDate.minute}";
+    return "$hourDate:$minuteDate";
   }
 }

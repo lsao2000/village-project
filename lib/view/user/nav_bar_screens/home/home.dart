@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/firebase_services/post_services/users_post_services.dart';
-//import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
 import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
@@ -19,6 +18,7 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   late IghoumaneUserProvider ighoumaneUserProvider;
   List<IghoumaneUserPost>? lstPosts;
+  ScrollController _postController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -30,6 +30,14 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    _postController.addListener(
+      () {
+        if (_postController.position.pixels ==
+            _postController.position.maxScrollExtent) {
+          log("reach the end");
+        }
+      },
+    );
     return Scaffold(
       body: Consumer<IghoumaneUserProvider>(
         builder: (context, value, child) {
@@ -40,10 +48,14 @@ class HomeState extends State<Home> {
               ),
             );
           }
-          return getPostsScreen(
-              postCount: value.lstAllPosts!.length,
-              height: height,
-              width: width);
+          return RefreshIndicator(
+            //color: ,
+            onRefresh: _refreshData,
+            child: getPostsScreen(
+                postCount: value.lstAllPosts!.length,
+                height: height,
+                width: width),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -64,16 +76,12 @@ class HomeState extends State<Home> {
   Widget getPostsScreen(
       {required int postCount, required double height, required double width}) {
     return ListView.builder(
+      controller: _postController,
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: postCount,
       itemBuilder: (ctx, index) {
         IghoumaneUserPost ighoumaneUserPost =
             ighoumaneUserProvider.lstAllPosts![index];
-        //IghoumaneUser userPoster = UsersPostServices.getPosterInfo(
-        //    userId: ighoumaneUserPost.getUserId);
-        //    .then((value) {
-        //  userPoster = value;
-        //});
-        //    ighoumaneUserProvider.lstAllPosts![index].postId;
         return FutureBuilder(
             future: UsersPostServices.getPosterInfo(
                 userId: ighoumaneUserPost.getUserId),
@@ -235,7 +243,7 @@ class HomeState extends State<Home> {
                             InkWell(
                               onTap: () async {
                                 String postId = ighoumaneUserPost.postId!;
-                               UsersPostServices.checkIfReactionExist(
+                                UsersPostServices.checkIfReactionExist(
                                     context: context,
                                     postId: postId,
                                     type: "like",
@@ -260,7 +268,7 @@ class HomeState extends State<Home> {
                             InkWell(
                               onTap: () {
                                 String postId = ighoumaneUserPost.postId!;
-                           UsersPostServices.checkIfReactionExist(
+                                UsersPostServices.checkIfReactionExist(
                                     context: context,
                                     postId: postId,
                                     type: "dislike",
@@ -318,5 +326,10 @@ class HomeState extends State<Home> {
       return false;
     }
     return reacted.first.getType == type;
+  }
+
+  Future<void> _refreshData() async {
+      print("refreshed");
+    UsersPostServices.updatePostProviderData(context: context);
   }
 }

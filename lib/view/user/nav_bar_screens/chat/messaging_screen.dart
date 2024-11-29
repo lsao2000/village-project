@@ -253,7 +253,6 @@ class MessagingScreenState extends State<MessagingScreen> {
           //    ),
           //  );
           //}
-          log("it is here");
           List<MessageModel> lstMessagesData = streamData.data!.docs.map((el) {
             Timestamp dateStamp = el["sendingTime"];
             return MessageModel.fromQuerySnapshot(
@@ -299,7 +298,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                            freindMessageView(
+                            messageView(
                                 width: width,
                                 height: height,
                                 messageModel: messageModel,
@@ -329,7 +328,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               )),
-                          freindMessageView(
+                          messageView(
                               width: width,
                               height: height,
                               messageModel: messageModel,
@@ -365,7 +364,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                            freindMessageView(
+                            messageView(
                                 width: width,
                                 height: height,
                                 messageModel: messageModel,
@@ -398,7 +397,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               )),
-                          freindMessageView(
+                          messageView(
                               width: width,
                               height: height,
                               messageModel: messageModel,
@@ -410,6 +409,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                   // if the index is not equal to 0
                   else {
                     DateTime currentDate = DateTime.now();
+                    // chek if the message date is the same as next message date
                     if (index - 1 >= 0 &&
                         lstMessagesData[index].getSendingTime.day ==
                             lstMessagesData[index - 1].getSendingTime.day) {
@@ -417,7 +417,7 @@ class MessagingScreenState extends State<MessagingScreen> {
                       if (currentUserId == messageModel.getSenderId) {
                         return Column(
                           children: [
-                            freindMessageView(
+                            messageView(
                                 width: width,
                                 height: height,
                                 messageModel: messageModel,
@@ -428,15 +428,17 @@ class MessagingScreenState extends State<MessagingScreen> {
                       // the message is not from the current use
                       return Column(
                         children: [
-                          freindMessageView(
+                          messageView(
                               width: width,
                               height: height,
                               messageModel: messageModel,
                               currentUserId: false)
                         ],
                       );
+                    }
+                    // chek if the message date is not the same as message date before
+                    else {
                       // chek if the message is from the current user
-                    } else {
                       if (currentUserId == messageModel.getSenderId) {
                         return Column(
                           children: [
@@ -453,16 +455,20 @@ class MessagingScreenState extends State<MessagingScreen> {
                                       borderRadius:
                                           BorderRadius.circular(width * 0.1)),
                                   child: Text(
-                                    Usefulfunctions.getDateFormat(
-                                        dateFormated: lstMessagesData[index + 1]
-                                            .getSendingTime,
-                                        context: context),
+                                  compareDateMessageWithCurrentDay(
+                                          messageDate: lstMessagesData[index]
+                                              .getSendingTime)
+                                      ? "Today"
+                                      : Usefulfunctions.getDateFormat(
+                                          dateFormated: lstMessagesData[index]
+                                              .getSendingTime,
+                                          context: context),
                                     style: const TextStyle(
                                         color: black38,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                            freindMessageView(
+                            messageView(
                                 width: width,
                                 height: height,
                                 messageModel: messageModel,
@@ -484,14 +490,21 @@ class MessagingScreenState extends State<MessagingScreen> {
                                     color: lightGrey,
                                     borderRadius:
                                         BorderRadius.circular(width * 0.1)),
-                                child:const Text(
-                                  "Today",
-                                  style:  TextStyle(
+                                child: Text(
+                                  compareDateMessageWithCurrentDay(
+                                          messageDate: lstMessagesData[index]
+                                              .getSendingTime)
+                                      ? "Today"
+                                      : Usefulfunctions.getDateFormat(
+                                          dateFormated: lstMessagesData[index]
+                                              .getSendingTime,
+                                          context: context),
+                                  style: const TextStyle(
                                       color: black38,
                                       fontWeight: FontWeight.bold),
                                 ),
                               )),
-                          freindMessageView(
+                          messageView(
                               width: width,
                               height: height,
                               messageModel: messageModel,
@@ -505,57 +518,8 @@ class MessagingScreenState extends State<MessagingScreen> {
         });
   }
 
-  Widget currentUserMessageView(
-      {required double width,
-      required double height,
-      required MessageModel messageModel}) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Stack(
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(
-                vertical: height * 0.004, horizontal: width * 0.02),
-            padding: EdgeInsets.only(
-                top: height * 0.005,
-                bottom: height * 0.005,
-                left: width * 0.02,
-                right: width * 0.03),
-            constraints:
-                BoxConstraints(maxWidth: width * 0.7), // Limit max width
-            decoration: BoxDecoration(
-                color: deepBlueDark, borderRadius: BorderRadius.circular(6)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize:
-                  MainAxisSize.min, // Minimize the size to fit content
-              children: [
-                Container(
-                    margin: EdgeInsets.only(
-                      right: width * 0.04,
-                    ),
-                    child: Text(
-                      messageModel.getTextMsg,
-                      style: const TextStyle(
-                          color: white, fontWeight: FontWeight.bold),
-                    )),
-                SizedBox(height: height * 0.005), // Space before timestamp
-                Text(
-                  "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget freindMessageView(
+  Widget messageView(
       {required double width,
       required double height,
       required MessageModel messageModel,
@@ -593,7 +557,8 @@ class MessagingScreenState extends State<MessagingScreen> {
                     )),
                 SizedBox(height: height * 0.005), // Space before timestamp
                 Text(
-                  "${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
+                    Usefulfunctions.getHourMinuteFormat(formatingDate: messageModel.getSendingTime),
+                  //"${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
                   style: TextStyle(
                     fontSize: 10,
                     color: currentUserId ? white : black,
@@ -617,5 +582,12 @@ class MessagingScreenState extends State<MessagingScreen> {
 
   String removeExtraSpaces(String text) {
     return text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
+
+  bool compareDateMessageWithCurrentDay({required DateTime messageDate}) {
+    DateTime currentDay = DateTime.now();
+    return messageDate.day == currentDay.day &&
+        messageDate.year == currentDay.year &&
+        messageDate.month == currentDay.month;
   }
 }

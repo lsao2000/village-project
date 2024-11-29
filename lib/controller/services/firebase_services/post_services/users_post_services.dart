@@ -14,7 +14,17 @@ class UsersPostServices {
     return db.collection("posts").snapshots();
   }
 
-  static updatePostProviderData() {}
+  static updatePostProviderData({required BuildContext context}) async {
+    try {
+      var querySnapshotPost = await db.collection("posts").get();
+      var provider = Provider.of<IghoumaneUserProvider>(context, listen: false);
+      await provider.initilizeListPost(querySnapshotPost.docs
+          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+          .toList());
+    } catch (e) {
+      log("failed to refresh data ${e.toString()}");
+    }
+  }
 
   static Future<void> addPost(
       {required String content, required BuildContext context}) async {
@@ -172,6 +182,7 @@ class UsersPostServices {
       log("failed to delete post ${e.toString()}");
     }
   }
+
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllReactionsOfPost(
       {required String postId}) {
     return db
