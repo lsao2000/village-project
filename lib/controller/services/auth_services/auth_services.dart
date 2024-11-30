@@ -122,12 +122,24 @@ class AuthServices {
       provider.initilizeIghoumaneUser(ighoumaneUser);
       var querySnapshotPost = await FirebaseFirestore.instance
           .collection("posts")
+          .orderBy("created_at", descending: true)
+          .limit(5)
           .get();
-      var queryCurrentUserPosts =
-          await db.collection("posts").where("user_id", isEqualTo: id).get();
-      provider.initilizeCurrentUserPosts(queryCurrentUserPosts.docs
+      var queryCurrentUserPosts = await db
+          .collection("posts")
+          .where("user_id", isEqualTo: id)
+          //.orderBy("created_at")
+          .get();
+      var lst = queryCurrentUserPosts.docs
           .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-          .toList());
+          .toList();
+      lst.sort(
+        (a, b) {
+          return b.getCreatedAt.compareTo(a.getCreatedAt);
+        },
+      );
+
+      provider.initilizeCurrentUserPosts(lst);
       await provider.initilizeListPost(querySnapshotPost.docs
           .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
           .toList());

@@ -51,5 +51,6 @@ class IghoumaneUserPost {
   List<ReactionType> get getLstReactions => _lstReaction;
   get getContent => _content;
   get getUserId => _userId;
-  get getCreatedAt => _createdAt;
+ DateTime  get getCreatedAt => _createdAt;
+
 }

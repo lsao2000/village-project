@@ -17,8 +17,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   late IghoumaneUserProvider ighoumaneUserProvider;
-  List<IghoumaneUserPost>? lstPosts;
-  ScrollController _postController = ScrollController();
+  final ScrollController _postController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -34,7 +33,14 @@ class HomeState extends State<Home> {
       () {
         if (_postController.position.pixels ==
             _postController.position.maxScrollExtent) {
-          log("reach the end");
+          try {
+            UsersPostServices.loadMorePosts(
+                values: ighoumaneUserProvider.lstAllPosts!, context: context);
+
+            log("succes to load more data");
+          } catch (e) {
+            log("failed to load more posts ${e.toString()}");
+          }
         }
       },
     );
@@ -48,8 +54,9 @@ class HomeState extends State<Home> {
               ),
             );
           }
+
           return RefreshIndicator(
-            //color: ,
+            color: deepBlueDark,
             onRefresh: _refreshData,
             child: getPostsScreen(
                 postCount: value.lstAllPosts!.length,
@@ -86,10 +93,18 @@ class HomeState extends State<Home> {
             future: UsersPostServices.getPosterInfo(
                 userId: ighoumaneUserPost.getUserId),
             builder: (ctx, data) {
+              if (data.connectionState == ConnectionState.waiting &&
+                  !data.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: deepBlue,
+                  ),
+                );
+              }
               IghoumaneUser? userPoster = data.data;
               return Container(
                 decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: deepBlue))),
+                    border: Border(bottom: BorderSide(color: lightGrey))),
                 padding: EdgeInsets.symmetric(
                     vertical: height * 0.01, horizontal: width * .03),
                 child: Column(
@@ -157,6 +172,7 @@ class HomeState extends State<Home> {
                       stream: UsersPostServices.getAllReactionsOfPost(
                           postId: ighoumaneUserPost.postId!),
                       builder: (ctx, snapshot) {
+                        // check if we get post data to add like or dislike.
                         if (snapshot.hasData) {
                           List<ReactionType> lstReactions = snapshot.data!.docs
                               .map((el) => ReactionType.fromQuerySnapshots(
@@ -179,13 +195,17 @@ class HomeState extends State<Home> {
                               ),
                               InkWell(
                                 onTap: () async {
-                                  String postId = ighoumaneUserPost.postId!;
-                                  UsersPostServices.checkIfReactionExist(
-                                      context: context,
-                                      postId: postId,
-                                      type: "like",
-                                      userId: ighoumaneUserProvider
-                                          .ighoumaneUser.getUserId);
+                                  try {
+                                    String postId = ighoumaneUserPost.postId!;
+                                    UsersPostServices.checkIfReactionExist(
+                                        context: context,
+                                        postId: postId,
+                                        type: "like",
+                                        userId: ighoumaneUserProvider
+                                            .ighoumaneUser.getUserId);
+                                  } catch (e) {
+                                    log("fail to add something ${e.toString()}");
+                                  }
                                 },
                                 child: Icon(
                                   Icons.thumb_up,
@@ -207,13 +227,17 @@ class HomeState extends State<Home> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  String postId = ighoumaneUserPost.postId!;
-                                  UsersPostServices.checkIfReactionExist(
-                                      context: context,
-                                      postId: postId,
-                                      type: "dislike",
-                                      userId: ighoumaneUserProvider
-                                          .ighoumaneUser.getUserId);
+                                  try {
+                                    String postId = ighoumaneUserPost.postId!;
+                                    UsersPostServices.checkIfReactionExist(
+                                        context: context,
+                                        postId: postId,
+                                        type: "dislike",
+                                        userId: ighoumaneUserProvider
+                                            .ighoumaneUser.getUserId);
+                                  } catch (e) {
+                                    log("fail to add something ${e.toString()}");
+                                  }
                                 },
                                 child: Icon(
                                   Icons.thumb_down,
@@ -226,6 +250,7 @@ class HomeState extends State<Home> {
                             ],
                           );
                         }
+                        // if we didnt get post data we just display black like and dislike icon.
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -242,13 +267,17 @@ class HomeState extends State<Home> {
                             ),
                             InkWell(
                               onTap: () async {
-                                String postId = ighoumaneUserPost.postId!;
-                                UsersPostServices.checkIfReactionExist(
-                                    context: context,
-                                    postId: postId,
-                                    type: "like",
-                                    userId: ighoumaneUserProvider
-                                        .ighoumaneUser.getUserId);
+                                try {
+                                  String postId = ighoumaneUserPost.postId!;
+                                  UsersPostServices.checkIfReactionExist(
+                                      context: context,
+                                      postId: postId,
+                                      type: "like",
+                                      userId: ighoumaneUserProvider
+                                          .ighoumaneUser.getUserId);
+                                } catch (e) {
+                                  log("fail to add something ${e.toString()}");
+                                }
                               },
                               child: const Icon(
                                 Icons.thumb_up,
@@ -267,13 +296,17 @@ class HomeState extends State<Home> {
                             ),
                             InkWell(
                               onTap: () {
-                                String postId = ighoumaneUserPost.postId!;
-                                UsersPostServices.checkIfReactionExist(
-                                    context: context,
-                                    postId: postId,
-                                    type: "dislike",
-                                    userId: ighoumaneUserProvider
-                                        .ighoumaneUser.getUserId);
+                                try {
+                                  String postId = ighoumaneUserPost.postId!;
+                                  UsersPostServices.checkIfReactionExist(
+                                      context: context,
+                                      postId: postId,
+                                      type: "dislike",
+                                      userId: ighoumaneUserProvider
+                                          .ighoumaneUser.getUserId);
+                                } catch (e) {
+                                  log("fail to add something ${e.toString()}");
+                                }
                               },
                               child: const Icon(
                                 Icons.thumb_down,
@@ -329,7 +362,7 @@ class HomeState extends State<Home> {
   }
 
   Future<void> _refreshData() async {
-      print("refreshed");
-    UsersPostServices.updatePostProviderData(context: context);
+    UsersPostServices.updatePostProviderData(
+        context: context, existingList: ighoumaneUserProvider.lstAllPosts!);
   }
 }
