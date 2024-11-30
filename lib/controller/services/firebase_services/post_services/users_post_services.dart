@@ -14,13 +14,28 @@ class UsersPostServices {
     return db.collection("posts").snapshots();
   }
 
-  static updatePostProviderData({required BuildContext context}) async {
+  static updatePostProviderData(
+      {required BuildContext context,
+      required List<IghoumaneUserPost> existingList}) async {
     try {
-      var querySnapshotPost = await db.collection("posts").get();
+      var values = existingList.last.getCreatedAt;
+      //var valuesTwo = existingList.last.getCreatedAt;
+      var lastItem = existingList.last;
+      var querySnapshotPost = await db
+          .collection("posts")
+          .orderBy("created_at", descending: true)
+          .endBefore([values]).get();
       var provider = Provider.of<IghoumaneUserProvider>(context, listen: false);
-      await provider.initilizeListPost(querySnapshotPost.docs
-          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-          .toList());
+      //if (querySnapshotPost.docs.length > provider.lstAllPosts!.length) {
+      if (querySnapshotPost.docs.length > provider.lstAllPosts!.length ||
+          querySnapshotPost.docs.length < provider.lstAllPosts!.length) {
+        List<IghoumaneUserPost> gatheringList = querySnapshotPost.docs
+            .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+            .toList();
+
+        List<IghoumaneUserPost> newList = gatheringList + [lastItem];
+        await provider.initilizeListPost(newList);
+      }
     } catch (e) {
       log("failed to refresh data ${e.toString()}");
     }
@@ -56,39 +71,46 @@ class UsersPostServices {
       String userId = Provider.of<IghoumaneUserProvider>(context, listen: false)
           .ighoumaneUser
           .getUserId;
-      var reactionsListQuery = await db
-          .collection("posts")
-          .doc(postId)
-          .collection("reaction_type")
-          .where("reacter_id", isEqualTo: userId)
-          .get();
-      if (reactionsListQuery.docs.isEmpty) {
-        log("add reaction");
-        addReactionToPost(
-            context: context, postId: postId, type: type, userId: userId);
-      } else {
-        var isLikedOrDisliked = reactionsListQuery.docs.first;
-        String reactionId = isLikedOrDisliked.id;
-        if (isLikedOrDisliked["react_type"] == type) {
-          log("delete reaction");
-          deleterReactionOfPost(
-              context: context,
-              postId: postId,
-              reactionId: reactionId,
-              userId: userId);
+      // check if post exist and then add reaction type.
+      var postExist = await checkIfPostExist(postDoc: postId);
+      if (postExist) {
+        var reactionsListQuery = await db
+            .collection("posts")
+            .doc(postId)
+            .collection("reaction_type")
+            .where("reacter_id", isEqualTo: userId)
+            .get();
+        if (reactionsListQuery.docs.isEmpty) {
+          log("add reaction");
+          addReactionToPost(
+              context: context, postId: postId, type: type, userId: userId);
         } else {
-          updateReactionOfPost(
-              context: context,
-              postId: postId,
-              type: type,
-              reactionId: reactionId,
-              userId: userId);
-          //if (type == "like") {
-          log("update ${isLikedOrDisliked["react_type"].toString()} to $type");
-          //} else {
-          //log("update like to dislike");
-          //}
+          var isLikedOrDisliked = reactionsListQuery.docs.first;
+          String reactionId = isLikedOrDisliked.id;
+          if (isLikedOrDisliked["react_type"] == type) {
+            log("delete reaction");
+            deleterReactionOfPost(
+                context: context,
+                postId: postId,
+                reactionId: reactionId,
+                userId: userId);
+          } else {
+            updateReactionOfPost(
+                context: context,
+                postId: postId,
+                type: type,
+                reactionId: reactionId,
+                userId: userId);
+            //if (type == "like") {
+            log("update ${isLikedOrDisliked["react_type"].toString()} to $type");
+            //} else {
+            //log("update like to dislike");
+            //}
+          }
         }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("cant Add $type, maybe the post has been deleted")));
       }
     } catch (e) {
       log("failed to check existing reaction ${e.toString()}");
@@ -205,5 +227,38 @@ class UsersPostServices {
     IghoumaneUser ighoumaneUser =
         IghoumaneUser.basicInfo(data["firstName"], data["lastName"]);
     return ighoumaneUser;
+  }
+
+  static void loadMorePosts(
+      {required List<IghoumaneUserPost> values,
+      required BuildContext context}) async {
+    try {
+      var lastCreatedAt = values.last.getCreatedAt;
+      var data = await db
+          .collection("posts")
+          .orderBy("created_at", descending: true)
+          .startAfter([lastCreatedAt])
+          .limit(4)
+          .get();
+      if (data.docs.isNotEmpty) {
+        List<IghoumaneUserPost> newLst = data.docs
+            .map(
+              (e) => IghoumaneUserPost.getPostFromQuerySnapshot(e),
+            )
+            .toList();
+        var provider =
+            Provider.of<IghoumaneUserProvider>(context, listen: false);
+        List<IghoumaneUserPost> newList = provider.lstAllPosts! + newLst;
+        provider.initilizeListPost(newList);
+        log(newLst.toString());
+      }
+    } catch (e) {
+      log("fail ${e.toString()}");
+    }
+  }
+
+  static Future<bool> checkIfPostExist({required String postDoc}) async {
+    var data = await db.collection("posts").doc(postDoc).get();
+    return data.exists;
   }
 }
