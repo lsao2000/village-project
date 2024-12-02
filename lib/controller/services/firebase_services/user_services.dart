@@ -24,6 +24,17 @@ class UserServices {
     }
   }
 
+  static Future<void> updateChatingWithStatus(
+      {required String currentUserId,required String? chatingWith}) async {
+    try {
+      await db
+          .collection("users")
+          .doc(currentUserId)
+          .update({"chatingWith": chatingWith});
+    } catch (e) {
+      log("fail to update chatingWith ${e.toString()}");
+    }
+  }
   //static Future<void> addPost(
   //    {required String content, required BuildContext context}) async {
   //  try {

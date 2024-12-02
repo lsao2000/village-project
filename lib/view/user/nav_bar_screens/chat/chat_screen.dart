@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/firebase_services/chat_services/chat_services.dart';
+import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/model/user_ighoumane_freind.dart';
 import 'package:village_project/utils/colors.dart';
@@ -38,6 +39,9 @@ class ChatScreenState extends State<ChatScreen> {
           UserIghoumaneFreind userIghoumaneFreind = lstAllFreindUser[index];
           return InkWell(
               onTap: () {
+                UserServices.updateChatingWithStatus(
+                    currentUserId: currentUser.getUserId,
+                    chatingWith: userIghoumaneFreind.getId);
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => MessagingScreen(

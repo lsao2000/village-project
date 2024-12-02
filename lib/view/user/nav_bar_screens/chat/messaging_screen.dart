@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/firebase_services/chat_services/chat_services.dart';
+import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/message_model.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/utils/colors.dart';
@@ -27,6 +29,11 @@ class MessagingScreenState extends State<MessagingScreen> {
       ighoumaneUserProvider = context.read<IghoumaneUserProvider>();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -79,41 +86,55 @@ class MessagingScreenState extends State<MessagingScreen> {
               ),
             ),
           ),
-          body: FutureBuilder(
-            future: ChatServices.getFreindShipType(
-                freindId: widget.freindId, context: context),
-            builder: (ctx, snapshot) {
-              var data = snapshot.data;
-              //if (snapshot.connectionState == ConnectionState.waiting) {
-              //  return const Center(
-              //    child: CircularProgressIndicator(
-              //      color: deepBlue,
-              //    ),
-              //  );
-              //}
-              //else {
-              //if (data?.getStatus == "requested") {
-              //  return const Center(
-              //    child: Text(
-              //      "The user has not accepted your following request yet",
-              //      style: TextStyle(fontWeight: FontWeight.bold,  color: black38),
-              //    ),
-              //  );
-              //} else {
-              return Stack(
-                children: [
-                  showMessages(width, height,
-                      ighoumaneUserProvider.ighoumaneUser.getUserId),
-                  messagingBox(width: width, height: height),
-                ],
-              );
-              //}
-              //}
+          body: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) {
+                return;
+              }
+              _handleExitPage();
             },
+            child: FutureBuilder(
+              future: ChatServices.getFreindShipType(
+                  freindId: widget.freindId, context: context),
+              builder: (ctx, snapshot) {
+                var data = snapshot.data;
+                //if (snapshot.connectionState == ConnectionState.waiting) {
+                //  return const Center(
+                //    child: CircularProgressIndicator(
+                //      color: deepBlue,
+                //    ),
+                //  );
+                //}
+                //else {
+                //if (data?.getStatus == "requested") {
+                //  return const Center(
+                //    child: Text(
+                //      "The user has not accepted your following request yet",
+                //      style: TextStyle(fontWeight: FontWeight.bold,  color: black38),
+                //    ),
+                //  );
+                //} else {
+                return Stack(
+                  children: [
+                    showMessages(width, height,
+                        ighoumaneUserProvider.ighoumaneUser.getUserId),
+                    messagingBox(width: width, height: height),
+                  ],
+                );
+              },
+            ),
           ),
         );
       },
     );
+  }
+
+  void _handleExitPage() async {
+    //print("exit screen");
+    await UserServices.updateChatingWithStatus(
+        currentUserId: ighoumaneUserProvider.ighoumaneUser.getUserId,chatingWith: null);
+    Navigator.pop(context);
   }
 
   Widget messagingBox({required double width, required double height}) {
@@ -455,14 +476,14 @@ class MessagingScreenState extends State<MessagingScreen> {
                                       borderRadius:
                                           BorderRadius.circular(width * 0.1)),
                                   child: Text(
-                                  compareDateMessageWithCurrentDay(
-                                          messageDate: lstMessagesData[index]
-                                              .getSendingTime)
-                                      ? "Today"
-                                      : Usefulfunctions.getDateFormat(
-                                          dateFormated: lstMessagesData[index]
-                                              .getSendingTime,
-                                          context: context),
+                                    compareDateMessageWithCurrentDay(
+                                            messageDate: lstMessagesData[index]
+                                                .getSendingTime)
+                                        ? "Today"
+                                        : Usefulfunctions.getDateFormat(
+                                            dateFormated: lstMessagesData[index]
+                                                .getSendingTime,
+                                            context: context),
                                     style: const TextStyle(
                                         color: black38,
                                         fontWeight: FontWeight.bold),
@@ -518,7 +539,6 @@ class MessagingScreenState extends State<MessagingScreen> {
         });
   }
 
-
   Widget messageView(
       {required double width,
       required double height,
@@ -557,7 +577,8 @@ class MessagingScreenState extends State<MessagingScreen> {
                     )),
                 SizedBox(height: height * 0.005), // Space before timestamp
                 Text(
-                    Usefulfunctions.getHourMinuteFormat(formatingDate: messageModel.getSendingTime),
+                  Usefulfunctions.getHourMinuteFormat(
+                      formatingDate: messageModel.getSendingTime),
                   //"${messageModel.getSendingTime.hour}:${messageModel.getSendingTime.minute}",
                   style: TextStyle(
                     fontSize: 10,
