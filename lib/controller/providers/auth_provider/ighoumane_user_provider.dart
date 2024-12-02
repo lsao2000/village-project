@@ -15,16 +15,15 @@ class IghoumaneUserProvider extends ChangeNotifier {
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
   }
-  Future<void> startLiseningToUsrPost(BuildContext context) async {
-    db.collection("posts").snapshots().listen((snapshot) async {
-      await initilizeListPost(
-          snapshot.docs.map((el) {
-            return IghoumaneUserPost.getPostFromQuerySnapshot(el);
-          }).toList());
-      //await  UserServices.getReactionsTypeFromPost(context: context);
-      notifyListeners();
-    });
-  }
+  //Future<void> startLiseningToUsrPost(BuildContext context) async {
+  //  db.collection("posts").snapshots().listen((snapshot) async {
+  //    await initilizeListPost(
+  //        snapshot.docs.map((el) {
+  //          return IghoumaneUserPost.getPostFromQuerySnapshot(el);
+  //        }).toList());
+  //    notifyListeners();
+  //  });
+  //}
 
   void updateFreindsIds({required String id}) {
     lstFreinds.removeWhere((item) => item.getId == id);
@@ -42,8 +41,17 @@ class IghoumaneUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initilizeListPost(
-      List<IghoumaneUserPost> lstPosts) async {
+  void deletePost({required String deletedPostId}) {
+    currentUserPosts.removeWhere(
+      (element) => element.postId == deletedPostId,
+    );
+    lstAllPosts?.removeWhere(
+      (element) => element.postId == deletedPostId,
+    );
+    notifyListeners();
+  }
+
+  Future<void> initilizeListPost(List<IghoumaneUserPost> lstPosts) async {
     lstAllPosts = lstPosts;
     notifyListeners();
   }

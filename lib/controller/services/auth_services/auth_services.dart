@@ -115,6 +115,8 @@ class AuthServices {
           lstFreindsIds: user["freinds"] is Iterable
               ? List<String>.from(user["freinds"])
               : []);
+      ighoumaneUser.pushToken = user['pushToken'];
+      ighoumaneUser.chatingWith = user['chatingWith'];
 
       ighoumaneUser.setDescription = user['description'];
       ighoumaneUser.setUserId = id;
@@ -128,21 +130,28 @@ class AuthServices {
       var queryCurrentUserPosts = await db
           .collection("posts")
           .where("user_id", isEqualTo: id)
-          //.orderBy("created_at")
+          .orderBy("created_at", descending: true)
           .get();
       var lst = queryCurrentUserPosts.docs
           .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
           .toList();
-      lst.sort(
-        (a, b) {
-          return b.getCreatedAt.compareTo(a.getCreatedAt);
+      List<IghoumaneUserPost> lstAllPost = querySnapshotPost.docs
+          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
+          .toList();
+      //provider.initilizeCurrentUserPosts(lst);
+      await provider.initilizeListPost(lstAllPost).then(
+        (value) {
+          lst.sort(
+            (a, b) {
+              return b.getCreatedAt.compareTo(a.getCreatedAt);
+            },
+          );
+          lst.forEach((element) {
+            log(element.toMap().toString());
+          });
+          provider.initilizeCurrentUserPosts(lst);
         },
       );
-
-      provider.initilizeCurrentUserPosts(lst);
-      await provider.initilizeListPost(querySnapshotPost.docs
-          .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-          .toList());
       _initilizeListFreindsUsers(
           lstFreindsIds: ighoumaneUser.getLstFreindsIds, context: context);
     } catch (e) {

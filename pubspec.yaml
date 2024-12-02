@@ -17,6 +17,7 @@ dependencies:
   cloud_firestore: ^5.4.4
   flutter_dotenv: ^5.2.1
   page_transition: ^2.1.0
+  firebase_messaging: ^15.1.5
 
 dev_dependencies:
   flutter_test:

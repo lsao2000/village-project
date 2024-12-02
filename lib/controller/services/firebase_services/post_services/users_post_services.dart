@@ -189,17 +189,8 @@ class UsersPostServices {
     try {
       var postCollection = db.collection("posts");
       postCollection.doc(postId).delete();
-      var lstPosts = await postCollection.get();
-      var currentUserPosts =
-          await postCollection.where("user_id", isEqualTo: userId).get();
       Provider.of<IghoumaneUserProvider>(context, listen: false)
-          .initilizeCurrentUserPosts(currentUserPosts.docs
-              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-              .toList());
-      Provider.of<IghoumaneUserProvider>(context, listen: false)
-          .initilizeListPost(lstPosts.docs
-              .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
-              .toList());
+          .deletePost(deletedPostId: postId);
     } catch (e) {
       log("failed to delete post ${e.toString()}");
     }
