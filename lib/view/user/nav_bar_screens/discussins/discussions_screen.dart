@@ -48,63 +48,102 @@ class DiscussionsScreenState extends State<DiscussionsScreen> {
     return SizedBox(
       width: width,
       child: ListView.builder(
-          itemCount: lstMessages.length,
-          itemBuilder: (ctx, index) {
-            String textValue = lstMessages[index];
-            double widthT = calculateTextWidth(textValue, width);
-            if (index == 6) {
-                return Stack(
-                    children: [
-                        Align(alignment: Alignment.topRight,
-                            child: Container(
-                                margin: EdgeInsets.symmetric( vertical: height * 0.004, horizontal: width * 0.02),
-                                padding: EdgeInsets.symmetric( vertical: height * 0.005, horizontal: width * 0.03),
-                                constraints: BoxConstraints(maxWidth: width * 0.8),
-                                decoration: BoxDecoration( color: Colors.black12, borderRadius: BorderRadius.circular(6)),
-                                child: Column( crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                        Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                                InkWell( onTap: () { log("tapped"); }, child: const Text("you"),),
-                                                Usefulfunctions.blankSpace( width: widthT * 0.65, height: 0),
-                                                const Text( "11-11-2013", style: TextStyle( fontWeight: FontWeight.bold, fontSize: 10),)
-                                            ],
-                                        ),
-                                        Text( textValue, style: const TextStyle( color: black, fontWeight: FontWeight.w600),),
-                                    ],
-                                ),
-                            ),
-                        ),
-                    ],
-                );
-            }
+        itemCount: lstMessages.length,
+        itemBuilder: (ctx, index) {
+          String textValue = lstMessages[index];
+          double widthT = calculateTextWidth(textValue, width);
+          if (index == 6) {
             return Stack(
               children: [
-                Container(
-                  margin: EdgeInsets.symmetric( vertical: height * 0.004, horizontal: width * 0.02),
-                  padding: EdgeInsets.symmetric( vertical: height * 0.005, horizontal: width * 0.03),
-                  constraints: BoxConstraints(maxWidth: width * 0.8),
-                  decoration: BoxDecoration( color: Colors.black12, borderRadius: BorderRadius.circular(6)),
-                  child: Column( crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell( onTap: () { log("tapped"); }, child: const Text("flan"),),
-                          Usefulfunctions.blankSpace( width: widthT * 0.65, height: 0),
-                          const Text( "11-11-2013", style: TextStyle( fontWeight: FontWeight.bold, fontSize: 10),)
-                        ],
-                      ),
-                      Text( textValue, style: const TextStyle( color: black, fontWeight: FontWeight.w600),),
-                    ],
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: height * 0.004, horizontal: width * 0.02),
+                    padding: EdgeInsets.symmetric(
+                        vertical: height * 0.005, horizontal: width * 0.03),
+                    constraints: BoxConstraints(maxWidth: width * 0.8),
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(6)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                log("tapped");
+                              },
+                              child: const Text("you"),
+                            ),
+                            Usefulfunctions.blankSpace(
+                                width: widthT * 0.65, height: 0),
+                            const Text(
+                              "11-11-2013",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 10),
+                            )
+                          ],
+                        ),
+                        Text(
+                          textValue,
+                          style: const TextStyle(
+                              color: black, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             );
-          },
+          }
+          return Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(
+                    vertical: height * 0.004, horizontal: width * 0.02),
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.005, horizontal: width * 0.03),
+                constraints: BoxConstraints(maxWidth: width * 0.8),
+                decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(6)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            log("tapped");
+                          },
+                          child: const Text("flan"),
+                        ),
+                        Usefulfunctions.blankSpace(
+                            width: widthT * 0.65, height: 0),
+                        const Text(
+                          "11-11-2013",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 10),
+                        )
+                      ],
+                    ),
+                    Text(
+                      textValue,
+                      style: const TextStyle(
+                          color: black, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -129,7 +168,7 @@ class DiscussionsScreenState extends State<DiscussionsScreen> {
             ),
             Usefulfunctions.blankSpace(width: width * 0.02, height: 0),
             const Text(
-              "1329 ",
+              "1329",
               style: TextStyle(color: black),
             ),
             Usefulfunctions.blankSpace(width: width * 0.01, height: 0),
