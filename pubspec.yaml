@@ -18,6 +18,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   page_transition: ^2.1.0
   firebase_messaging: ^15.1.5
+  flutter_local_notifications: ^18.0.1
 
 dev_dependencies:
   flutter_test:
