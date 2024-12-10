@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/auth_services/auth_services.dart';
+import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
 import 'package:village_project/view/user/nav_bar_screens/chat/chat_screen.dart';
@@ -23,14 +22,31 @@ class UserBottomNavBar extends StatefulWidget {
   State<StatefulWidget> createState() => UserBottomNavBarState();
 }
 
-class UserBottomNavBarState extends State<UserBottomNavBar> {
+class UserBottomNavBarState extends State<UserBottomNavBar>
+    with WidgetsBindingObserver {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
   late final StreamSubscription<User?> listening;
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    var firstOpen = state == AppLifecycleState.detached;
+    if (state == AppLifecycleState.resumed || firstOpen == false) {
+      var ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context,listen:false);
+      UserServices.updateConnectionStatus(
+          userId: ighoumaneUserProvider.ighoumaneUser.getUserId,
+          connectionStatus: "online");
+    } else if (state == AppLifecycleState.detached) {
+      var ighoumaneUserProvider = Provider.of<IghoumaneUserProvider>(context,listen: false);
+      UserServices.updateConnectionStatus(
+          userId: ighoumaneUserProvider.ighoumaneUser.getUserId,
+          connectionStatus: "offline");
+    }
+  }
+
+  @override
   void initState() {
     AuthServices.intilizeIghoumaneUser(context);
-
     listening = FirebaseAuth.instance.authStateChanges().listen((User? user) {
       try {
         if (user == null) {
@@ -42,6 +58,7 @@ class UserBottomNavBarState extends State<UserBottomNavBar> {
         log("error in disposing ${e.toString()}");
       }
     });
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 

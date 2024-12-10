@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/providers/auth_provider/joined_user_provider.dart';
 import 'package:village_project/controller/providers/auth_provider/otp_provider_controller.dart';
+import 'package:village_project/controller/services/firebase_services/user_presence_services.dart';
 import 'package:village_project/firebase_messaging_api.dart';
-import 'package:village_project/view/auth_screen/auth_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:village_project/view/user/splash_screen.dart';
 import 'firebase_options.dart';
@@ -20,6 +20,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final UserPresenceServices userPresenceServices = UserPresenceServices();
+  await userPresenceServices.initUserPresence();
   await FirebaseMessagingApi().requestNotificationPermission();
   runApp(const MyApp());
 }

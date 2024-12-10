@@ -1,12 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:village_project/controller/services/auth_services/auth_services.dart';
 import 'package:village_project/utils/colors.dart';
-import 'package:village_project/view/auth_screen/SignInLogic.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
 import 'package:village_project/view/user/user_bottom_nav_bar.dart';
 //import 'package:village_project/view/user/user_bottom_nav_bar.dart';
