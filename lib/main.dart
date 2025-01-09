@@ -20,8 +20,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final UserPresenceServices userPresenceServices = UserPresenceServices();
-  await userPresenceServices.initUserPresence();
+  //final UserPresenceServices userPresenceServices = UserPresenceServices();
+  //await userPresenceServices.initUserPresence();
   await FirebaseMessagingApi().requestNotificationPermission();
   runApp(const MyApp());
 }

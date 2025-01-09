@@ -75,20 +75,6 @@ class SplashScreenState extends State<SplashScreen> {
     bool isLogin = AuthServices.checkAuthentication();
     try {
         return isLogin?const UserBottomNavBar():const AuthScreen();
-      //return isLogin
-      //    ? Navigator.pushAndRemoveUntil(
-      //        context,
-      //        PageTransition(
-      //            child: const UserBottomNavBar(),
-      //            type: PageTransitionType.scale,
-      //            alignment: Alignment.center),
-      //        (route) => false)
-      //    : Navigator.pushAndRemoveUntil(
-      //        context,
-      //        PageTransition(
-      //            child: const AuthScreen(),
-      //            type: PageTransitionType.rightToLeftJoined),
-      //        (route) => false);
     } catch (e) {
       log("failed removing not existing widget ${e.toString()}");
       return const AuthScreen();
