@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/services/firebase_services/post_services/users_post_services.dart';
-import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/utils/colors.dart';
 
 class AddPostScreen extends StatefulWidget {

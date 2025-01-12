@@ -18,7 +18,7 @@ class SearchScreen extends SearchDelegate<String> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
-      child: Container(
+      child: SizedBox(
         width: width * 0.4,
         height: height * 0.4,
         child: Card(

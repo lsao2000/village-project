@@ -35,7 +35,7 @@ class MeetingScreenState extends State<MeetingScreen> {
                 ),
               ),
               Usefulfunctions.blankSpace(width: 0, height: height * 0.005),
-              Container(
+              SizedBox(
                 width: width,
                 height: height * 0.024,
                 child: ListView.builder(
