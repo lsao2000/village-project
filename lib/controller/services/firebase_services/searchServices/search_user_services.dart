@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/freindship_model.dart';
-import 'package:village_project/model/user.dart';
 import 'package:village_project/model/user_ighoumane_freind.dart';
 
 class SearchUserServices {

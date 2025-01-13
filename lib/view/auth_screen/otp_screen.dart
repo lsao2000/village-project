@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
 import 'package:village_project/controller/services/auth_services/auth_services.dart';
-import 'package:village_project/model/joined_user.dart';
 import 'package:village_project/utils/colors.dart';
 import 'package:village_project/view/auth_screen/auth_screen.dart';
 

@@ -146,9 +146,9 @@ class AuthServices {
               return b.getCreatedAt.compareTo(a.getCreatedAt);
             },
           );
-          lst.forEach((element) {
+          for (var element in lst) {
             log(element.toMap().toString());
-          });
+          }
           provider.initilizeCurrentUserPosts(lst);
         },
       );

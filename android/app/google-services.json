@@ -3,9 +3,28 @@
     "project_number": "889017444695",
     "firebase_url": "https://fastdata-7c185-default-rtdb.firebaseio.com",
     "project_id": "fastdata-7c185",
-    "storage_bucket": "fastdata-7c185.appspot.com"
+    "storage_bucket": "fastdata-7c185.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889017444695:android:fb67b6676fd4d1ed3bf612",
+        "android_client_info": {
+          "package_name": "com.example.vi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxwYdptQX-jCxzc0JQDBj32EbS_07HvQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:889017444695:android:fe5c783ec51e7beb3bf612",
