@@ -38,11 +38,29 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
+       # Download & install the Android SDK.
+      - name: Install Android SDK
+        uses: malinskiy/action-android/install-sdk@release/0.1.6
+      # setup platform tools.
+      - run: sdkmanager platform-tools
+      # check available android device.
+      - run: adb devices
+      # verify $ANDROID_HOME for late flutter commands.
+      - run: echo $ANDROID_HOME
+
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Run Tests
-        run: flutter test integration_test -d emulator-5554
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.6
+        with:
+          cmd: flutter test integration_test
+          api: 33
+          tag: google_apis
+          abi: x86_64
+
+      # - name: Run Tests
+      #   run: flutter test integration_test -d emulator-5554
 
       - name: Decode Keystore
         run: |
