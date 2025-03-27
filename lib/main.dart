@@ -17,7 +17,7 @@ Future<void> main() async {
     throw Exception("not initialize dotenv ${e.toString()}");
   }
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    //options: DefaultFirebaseOptions.currentPlatform,
   );
   //final UserPresenceServices userPresenceServices = UserPresenceServices();
   //await userPresenceServices.initUserPresence();
