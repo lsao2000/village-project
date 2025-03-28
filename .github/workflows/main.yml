@@ -41,20 +41,23 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Integration Tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          arch: x86_64
-          profile: pixel_4
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          disable-animations: true
-          script: |
+      - name: Run Tests
+        run: flutter test integration_test -d emulator-5554
+
+     # - name: Run Integration Tests
+       # uses: reactivecircus/android-emulator-runner@v2
+        #with:
+         # api-level: 33
+          #arch: x86_64
+         # profile: pixel_4
+         # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+         # disable-animations: true
+         # script: |
             # Run ONLY integration tests by specifying exact directory
-            flutter test \
-              --dart-define=CI=true \
-              --timeout 15m \
-              integration_test/app_test.dart  # Explicit test file
+         #   flutter test \
+         #     --dart-define=CI=true \
+         #     --timeout 15m \
+         #     integration_test/app_test.dart  # Explicit test file
                 
       - name: Decode Keystore
         run: |
