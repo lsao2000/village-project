@@ -50,9 +50,10 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
           script: |
-            flutter test integration_test \
+            flutter test \
               --dart-define=CI=true \
-              --timeout 15m
+              --timeout 15m \
+              integration_test/
             
       - name: Decode Keystore
         run: |
