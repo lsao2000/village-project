@@ -41,21 +41,14 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Tests
-        run: |
-          # Install emulator dependencies
-          sudo apt-get -q install --no-install-recommends libpulse0
-          
-          # Create and start emulator
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86"
-          emulator -avd test -no-audio -no-window -no-snapshot -no-accel -gpu swiftshader_indirect &
-          adb wait-for-device
-                
-          # Run tests with a timeout
-          flutter test integration_test --device-id emulator-5554
-            # - name: Run Tests
-            #   run: flutter test integration_test -d emulator-5554
-
+      - name: Run Integration Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: pixel_4
+          script: flutter test integration_test
+      
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
