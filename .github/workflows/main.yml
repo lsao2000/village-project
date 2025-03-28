@@ -58,7 +58,6 @@ jobs:
          #     --dart-define=CI=true \
          #     --timeout 15m \
          #     integration_test/app_test.dart  # Explicit test file
-                
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
