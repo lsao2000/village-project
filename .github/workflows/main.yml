@@ -47,8 +47,13 @@ jobs:
           api-level: 33
           arch: x86_64
           profile: pixel_4
-          script: flutter test integration_test
-      
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: |
+            flutter test integration_test \
+              --dart-define=CI=true \
+              --timeout 15m
+            
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
