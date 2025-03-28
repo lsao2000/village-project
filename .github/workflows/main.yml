@@ -42,7 +42,7 @@ jobs:
         run: flutter pub get
 
       - name: Run Tests
-        run: flutter test integration_test -d emulator-5554
+        run: flutter test
 
      # - name: Run Integration Tests
        # uses: reactivecircus/android-emulator-runner@v2
