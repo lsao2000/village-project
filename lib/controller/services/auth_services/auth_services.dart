@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
 import 'package:village_project/controller/providers/auth_provider/joined_user_provider.dart';
 import 'package:village_project/controller/providers/auth_provider/otp_provider_controller.dart';
+import 'package:village_project/controller/services/firebase_services/meeting_services/meeting_logic_services.dart';
 import 'package:village_project/controller/services/firebase_services/registration_services.dart';
 import 'package:village_project/controller/services/firebase_services/user_services.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
@@ -117,7 +118,6 @@ class AuthServices {
               : []);
       ighoumaneUser.pushToken = user['pushToken'];
       ighoumaneUser.chatingWith = user['chatingWith'];
-
       ighoumaneUser.setDescription = user['description'];
       ighoumaneUser.setUserId = id;
       var provider = Provider.of<IghoumaneUserProvider>(context, listen: false);
@@ -138,7 +138,6 @@ class AuthServices {
       List<IghoumaneUserPost> lstAllPost = querySnapshotPost.docs
           .map((el) => IghoumaneUserPost.getPostFromQuerySnapshot(el))
           .toList();
-      //provider.initilizeCurrentUserPosts(lst);
       await provider.initilizeListPost(lstAllPost).then(
         (value) {
           lst.sort(
@@ -235,7 +234,6 @@ class AuthServices {
             password: passwordUser);
         Provider.of<JoinedUserProvider>(ctx, listen: false)
             .intilizeJoinedUser(joinedUser, userId);
-        //IghoumaneUser ighoumaneUser = IghoumaneUser(firstName: user['firstName'], lastName: lastName, phoneNumber: phoneNumber, createAt: createAt, password: password)
         receiveOTP(context: ctx, mobileNumber: phone, isRegisterOtpType: true);
         return 'done';
       }
@@ -270,6 +268,7 @@ class AuthServices {
             .initilizeListFreinds(newLstFreindIds);
         Provider.of<IghoumaneUserProvider>(context, listen: false)
             .updateIghoumaneUserLstFreindIds(lstFreindIds: lstFreindsIds);
+        MeetingLogicServices.getAllTodayMeeting(ctx: context);
       }
     } catch (e) {
       log("failed to initilizeListFreinds ${e.toString()}");
