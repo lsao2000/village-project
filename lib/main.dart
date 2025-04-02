@@ -7,7 +7,6 @@ import 'package:village_project/controller/providers/auth_provider/otp_provider_
 import 'package:village_project/firebase_messaging_api.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:village_project/view/user/splash_screen.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +26,7 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {

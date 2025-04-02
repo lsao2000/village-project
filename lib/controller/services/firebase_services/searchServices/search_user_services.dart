@@ -22,6 +22,39 @@ class SearchUserServices {
     return querySnapshot;
   }
 
+  //Future<List<IghoumaneUser>> searchFriends({
+  //  required String query,
+  //  required String currentUserId,
+  //}) async {
+  //  // 1. Get current user's friend IDs first
+  //  DocumentSnapshot userDoc = await FirebaseFirestore.instance
+  //      .collection('users')
+  //      .doc(currentUserId)
+  //      .get();
+  //
+  //  List<String> friendIds = List<String>.from(userDoc['friends'] ?? []);
+  //
+  //  // 2. Fetch friends' data matching search
+  //  QuerySnapshot snapshot = await FirebaseFirestore.instance
+  //      .collection('users')
+  //      .where(FieldPath.documentId, whereIn: friendIds)
+  //      .where('searchKeywords', arrayContains: query.toLowerCase())
+  //      .get();
+  //
+  //  return snapshot.docs
+  //      .map((doc) => IghoumaneUser.fromMap(doc.data()))
+  //      .toList();
+  //}
+  //
+  //static Future<QuerySnapshot> getAllFreinds() async {
+  //  String currentUserId =
+  //      Provider.of<IghoumaneUserProvider>(context, listen: false)
+  //          .ighoumaneUser
+  //          .getUserId;
+  //  QuerySnapshot querySnapshot = await db.collection("users").doc(currentUserId).get();
+  //  return querySnapshot;
+  //}
+
   static addNewFreind(
       {required String freindId,
       required BuildContext context,
@@ -43,7 +76,7 @@ class SearchUserServices {
       await db.collection("freindship").doc().set(freindshipModel.toMap());
       UserIghoumaneFreind userIghoumaneFreind = UserIghoumaneFreind(
           id: freindId, firstName: firstName, lastName: lastName);
-      Provider.of<IghoumaneUserProvider>(context,listen: false)
+      Provider.of<IghoumaneUserProvider>(context, listen: false)
           .addToListFreinds(userIghoumaneFreind);
     } catch (e) {
       log("failed to add freindship  ${e.toString()}");

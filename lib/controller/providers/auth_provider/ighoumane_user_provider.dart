@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:village_project/model/ighoumane_user_post.dart';
+import 'package:village_project/model/meeting_model.dart';
 import 'package:village_project/model/reaction_type.dart';
 import 'package:village_project/model/user.dart';
 import 'package:village_project/model/user_ighoumane_freind.dart';
@@ -9,19 +10,21 @@ class IghoumaneUserProvider extends ChangeNotifier {
   List<IghoumaneUserPost>? lstAllPosts;
   late List<UserIghoumaneFreind> lstFreinds;
   late List<IghoumaneUserPost> currentUserPosts;
+  late List<MeetingModel> lstMeetings;
   int searchItemCount = 20;
   IghoumaneUserProvider() {
     initilizeListFreinds([]);
   }
-  //Future<void> startLiseningToUsrPost(BuildContext context) async {
-  //  db.collection("posts").snapshots().listen((snapshot) async {
-  //    await initilizeListPost(
-  //        snapshot.docs.map((el) {
-  //          return IghoumaneUserPost.getPostFromQuerySnapshot(el);
-  //        }).toList());
-  //    notifyListeners();
-  //  });
-  //}
+
+  void initilizeListMeetings(List<MeetingModel> list) {
+    lstMeetings = list;
+    notifyListeners();
+  }
+
+  void updateListMeetings(List<MeetingModel> newList) {
+    newList = lstMeetings;
+    notifyListeners();
+  }
 
   void updateFreindsIds({required String id}) {
     lstFreinds.removeWhere((item) => item.getId == id);

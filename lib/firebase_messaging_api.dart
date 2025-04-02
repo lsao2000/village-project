@@ -12,9 +12,11 @@ class FirebaseMessagingApi {
       FlutterLocalNotificationsPlugin();
   Future<void> requestNotificationPermission() async {
     try {
+      print("done this function");
       await firebaseMessaging.requestPermission();
       await configLocalNotification();
       final String? firebaseToken = await firebaseMessaging.getToken();
+      print("Token : $firebaseToken");
       _storeTokenInFirestore(firebaseToken!);
       FirebaseMessaging.onMessage.listen(
         (RemoteMessage message) {
@@ -35,7 +37,8 @@ class FirebaseMessagingApi {
       User user = FirebaseAuth.instance.currentUser!;
       await db.collection("users").doc(user.uid).update({"pushToken": token});
     } catch (e) {
-      log("failed to store token ${e.toString()}");
+      print("failed to update token ");
+      //log("failed to store token ${e.toString()}");
     }
   }
 

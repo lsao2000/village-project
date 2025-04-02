@@ -18,10 +18,7 @@ import 'package:village_project/firebase_config_keys.dart';
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -29,15 +26,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,13 +41,24 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: FirebaseConfigKeys.firebaseWebApiKey!,
+    appId: '1:889017444695:web:e0c0a4301191acca3bf612',
+    messagingSenderId: '889017444695',
+    projectId: 'fastdata-7c185',
+    authDomain: 'fastdata-7c185.firebaseapp.com',
+    databaseURL: 'https://fastdata-7c185-default-rtdb.firebaseio.com',
+    storageBucket: 'fastdata-7c185.firebasestorage.app',
+    measurementId: 'G-L2K9SKW3NH',
+  );
+
   static FirebaseOptions android = FirebaseOptions(
     apiKey: FirebaseConfigKeys.firebaseAndroidApiKey,
     appId: '1:889017444695:android:fe5c783ec51e7beb3bf612',
     messagingSenderId: '889017444695',
     projectId: 'fastdata-7c185',
     databaseURL: 'https://fastdata-7c185-default-rtdb.firebaseio.com',
-    storageBucket: 'fastdata-7c185.appspot.com',
+    storageBucket: 'fastdata-7c185.firebasestorage.app',
   );
 
   static FirebaseOptions ios = FirebaseOptions(
@@ -65,7 +67,28 @@ class DefaultFirebaseOptions {
     messagingSenderId: '889017444695',
     projectId: 'fastdata-7c185',
     databaseURL: 'https://fastdata-7c185-default-rtdb.firebaseio.com',
-    storageBucket: 'fastdata-7c185.appspot.com',
+    storageBucket: 'fastdata-7c185.firebasestorage.app',
     iosBundleId: 'com.example.villageProject',
+  );
+
+  static FirebaseOptions macos = FirebaseOptions(
+    apiKey: FirebaseConfigKeys.firebaseMacosApiKey!,
+    appId: '1:889017444695:ios:007800b7bcc63ab13bf612',
+    messagingSenderId: '889017444695',
+    projectId: 'fastdata-7c185',
+    databaseURL: 'https://fastdata-7c185-default-rtdb.firebaseio.com',
+    storageBucket: 'fastdata-7c185.firebasestorage.app',
+    iosBundleId: 'com.example.villageProject',
+  );
+
+  static FirebaseOptions windows = FirebaseOptions(
+    apiKey: FirebaseConfigKeys.firebaseWindowsApiKey!,
+    appId: '1:889017444695:web:e902677c5ef4596d3bf612',
+    messagingSenderId: '889017444695',
+    projectId: 'fastdata-7c185',
+    authDomain: 'fastdata-7c185.firebaseapp.com',
+    databaseURL: 'https://fastdata-7c185-default-rtdb.firebaseio.com',
+    storageBucket: 'fastdata-7c185.firebasestorage.app',
+    measurementId: 'G-PMT777X0FN',
   );
 }
