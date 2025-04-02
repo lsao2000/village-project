@@ -8,7 +8,7 @@ import 'package:village_project/controller/services/firebase_services/user_servi
 import 'package:village_project/model/meeting_model.dart';
 
 class MeetingLogicServices {
-  static Future<void> createMeeting(
+  static Future<String?> createMeeting(
       {required String meetingtoken,
       required List<String> invitedUsers,
       required String currentUserId,
@@ -18,7 +18,8 @@ class MeetingLogicServices {
       required List<String> joinedUsers}) async {
     try {
       DateTime creationDate = DateTime.now();
-      await db.collection("meetings").doc().set({
+      var doc = db.collection("meetings").doc();
+      var data = await doc.set({
         "createdAt": creationDate,
         "adminId": currentUserId,
         "invitedUsers": FieldValue.arrayUnion(invitedUsers),
@@ -28,10 +29,13 @@ class MeetingLogicServices {
         "status": meetingStatus,
         "joinedUsers": FieldValue.arrayUnion(joinedUsers)
       }).onError((el, e) {
-        log("error: ${el.toString()}");
+        print("error: ${el.toString()}");
+        //log("error: ${el.toString()}");
       });
+      return doc.id.toString();
     } catch (e) {
       log("error: ${e.toString()}");
+      return null;
     }
   }
 
@@ -39,7 +43,7 @@ class MeetingLogicServices {
     try {
       //int today =
       DateTime currenDate = DateTime.now();
-      DateTime yesterday = currenDate.subtract(Duration(hours: 22));
+      DateTime yesterday = currenDate.subtract(Duration(hours: 23));
       QuerySnapshot<Map<String, dynamic>> meetings = await db
           .collection("meetings")
           .where('createdAt', isGreaterThan: Timestamp.fromDate(yesterday))
@@ -51,6 +55,36 @@ class MeetingLogicServices {
       log("meetings : ${lstAllMettings.toString()}");
     } catch (e) {
       log("error: ${e.toString()}");
+    }
+  }
+
+  static Future<void> updateMeetingStatus(
+      {required String id,
+      required String meetingStatus,
+      required bool leaveChannel,
+      required BuildContext ctx,
+      required String userId}) async {
+    try {
+      if (leaveChannel) {
+        await db.collection("meetings").doc(id).update({
+          "status": meetingStatus,
+          "joinedUsers": FieldValue.arrayRemove([userId])
+        }).then((v) {
+          getAllTodayMeeting(ctx: ctx);
+        });
+        log("user leaves status: $meetingStatus");
+      } else {
+        await db.collection("meetings").doc(id).update({
+          "status": meetingStatus,
+          "joinedUsers": FieldValue.arrayUnion([userId])
+        }).then((v) {
+          getAllTodayMeeting(ctx: ctx);
+        });
+        log("user joined status: $meetingStatus");
+      }
+    } catch (e) {
+      print("fail to update: ${e.toString()}");
+      log("Error : ${e.toString()}");
     }
   }
 }

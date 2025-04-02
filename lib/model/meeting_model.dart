@@ -7,23 +7,25 @@ class MeetingModel {
   late String title;
   late MeetingRole roleType;
   late List<String> invitedUserIds;
+  late List<String> joinedUsers;
   late String meetingStatus;
   late DateTime createdAt;
-  MeetingModel({
-    required this.meetingId,
-    required this.token,
-    required this.title,
-    required this.roleType,
-    required this.createdAt,
-    required this.meetingStatus,
-    required this.invitedUserIds,
-  });
+  MeetingModel(
+      {required this.meetingId,
+      required this.token,
+      required this.title,
+      required this.roleType,
+      required this.createdAt,
+      required this.meetingStatus,
+      required this.invitedUserIds,
+      required this.joinedUsers});
 
   static MeetingModel fromMap(
       QueryDocumentSnapshot<Map<String, dynamic>> meeting) {
     var id = meeting.id;
     Timestamp createdDate = meeting["createdAt"];
     List<dynamic> ids = meeting["invitedUsers"];
+    List<dynamic> joinedUserIds = meeting["joinedUsers"];
     MeetingModel meetingModel = MeetingModel(
         meetingId: id,
         token: meeting["meetingToken"],
@@ -31,6 +33,7 @@ class MeetingModel {
         roleType: meeting["roleType"] == ("public")
             ? MeetingRole.public
             : MeetingRole.private,
+        joinedUsers: joinedUserIds.map((el) => el.toString()).toList(),
         meetingStatus: meeting["status"],
         invitedUserIds: ids.map((el) => el.toString()).toList(),
         createdAt: createdDate.toDate());

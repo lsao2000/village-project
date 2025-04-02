@@ -1,13 +1,16 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
-//import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:village_project/controller/providers/auth_provider/ighoumane_user_provider.dart';
+import 'package:village_project/controller/services/firebase_services/meeting_services/meeting_logic_services.dart';
 import 'package:village_project/firebase_config_keys.dart';
 import 'package:village_project/utils/colors.dart';
 
 class MeetingPage extends StatefulWidget {
-  const MeetingPage({super.key, required this.token});
+  const MeetingPage({super.key, required this.token, required this.meetingId});
   final String token;
+  final String meetingId;
   @override
   State<StatefulWidget> createState() => _MeetingPageState();
 }
@@ -56,41 +59,47 @@ class _MeetingPageState extends State<MeetingPage> {
   // Register an event handler for Agora RTC
   void _setupEventHandlers() {
     _engine.registerEventHandler(
-      RtcEngineEventHandler(
-        onError: (error, message) {
-          debugPrint("error: ${error.toString()}");
-        },
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          debugPrint("Local user ${connection.localUid} joined");
-          setState(() => _localUserJoined = true);
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          debugPrint("Remote user $remoteUid joined");
-          setState(() => _remoteUid = remoteUid);
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          debugPrint("Remote user $remoteUid left");
-          setState(() => _remoteUid = null);
-        },
-      ),
+      RtcEngineEventHandler(onError: (error, message) {
+        print("error : ${error.toString()}");
+        debugPrint("error: ${error.toString()}");
+      }, onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        debugPrint("Local user ${connection.localUid} joined");
+        print("joined succesfully ${connection.localUid}");
+        setState(() => _localUserJoined = true);
+      }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        debugPrint("Remote user $remoteUid joined");
+        print("user joined succesfully ${connection.localUid}");
+        setState(() => _remoteUid = remoteUid);
+      }, onPermissionError: (permission) {
+        print("error in permission: ${permission.toString()}");
+      }, onUserOffline: (RtcConnection connection, int remoteUid,
+          UserOfflineReasonType reason) {
+        debugPrint("Remote user $remoteUid left");
+        setState(() => _remoteUid = null);
+      }, onLeaveChannel: (rtcConnection, rtc) {
+        print("user leave channel: ${rtcConnection.localUid.toString()}");
+      }),
     );
   }
 
   // Join a channel
   Future<void> _joinChannel() async {
-    await _engine.joinChannel(
-      token: widget.token,
-      channelId: channel,
-      options: const ChannelMediaOptions(
-        autoSubscribeVideo: true,
-        autoSubscribeAudio: true,
-        publishCameraTrack: true,
-        publishMicrophoneTrack: true,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      ),
-      uid: 0,
-    );
+    try {
+      await _engine.joinChannel(
+        token: widget.token,
+        channelId: channel,
+        options: const ChannelMediaOptions(
+          autoSubscribeVideo: true,
+          autoSubscribeAudio: true,
+          publishCameraTrack: true,
+          publishMicrophoneTrack: true,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        ),
+        uid: 0,
+      );
+    } catch (e) {
+      print("Error : ${e.toString()}");
+    }
   }
 
   @override
@@ -109,6 +118,8 @@ class _MeetingPageState extends State<MeetingPage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    String currentUserId =
+        context.read<IghoumaneUserProvider>().ighoumaneUser.getUserId;
     return Scaffold(
       appBar: AppBar(title: const Text('Agora Video Calling')),
       body: Stack(
@@ -130,8 +141,17 @@ class _MeetingPageState extends State<MeetingPage> {
             alignment: Alignment.bottomCenter,
             child: IconButton(
               onPressed: () async {
-                await _cleanupAgoraEngine();
-                Navigator.pop(context);
+                await MeetingLogicServices.updateMeetingStatus(
+                        ctx: context,
+                        id: widget.meetingId,
+                        meetingStatus: "Offline",
+                        leaveChannel: true,
+                        userId: currentUserId)
+                    .then((value) async {
+                  await _cleanupAgoraEngine().then((v) {
+                    Navigator.pop(context);
+                  });
+                });
               },
               icon: Icon(
                 Icons.call,

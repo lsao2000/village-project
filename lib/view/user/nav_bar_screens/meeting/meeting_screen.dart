@@ -1,4 +1,3 @@
-//import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:village_project/constants/UsefulFunctions.dart';
@@ -24,13 +23,13 @@ class MeetingScreenState extends State<MeetingScreen> {
   List<String> invitedFreinds = [];
   List<String> invitedFreindsIds = [];
   List<Map<String, dynamic>> freindslistTest = [];
-  List<MeetingModel> lstAllMeetings = [];
+  //List<MeetingModel> lstAllMeetings = [];
   TextEditingController meetingTitle = TextEditingController();
 
   @override
   void initState() {
-    lstAllMeetings =
-        Provider.of<IghoumaneUserProvider>(context, listen: false).lstMeetings;
+    //lstAllMeetings =
+    //    Provider.of<IghoumaneUserProvider>(context, listen: false).lstMeetings;
     super.initState();
   }
 
@@ -42,6 +41,8 @@ class MeetingScreenState extends State<MeetingScreen> {
         context.read<IghoumaneUserProvider>();
     List<UserIghoumaneFreind> lstFreinds = ighoumaneUserProvider.lstFreinds;
 
+    String currentUserId =
+        context.read<IghoumaneUserProvider>().ighoumaneUser.getUserId;
     setState(() {
       freindslistTest = lstFreinds.map((el) {
         return {
@@ -51,29 +52,40 @@ class MeetingScreenState extends State<MeetingScreen> {
         };
       }).toList();
     });
+    //return RefreshIndicator(
+    //  color: Colors.black,
+    //  onRefresh: () async {
+    //    return await _refreshData(ctx: context);
+    //  },
+    //  child: meetingInfo(currentUserId: currentUserId),
+    //);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
-            height: height * 0.01,
-          ),
-          createMeeting(
-              width: width,
-              height: height,
-              lstFreinds: lstFreinds,
-              ighoumaneUserProvider: ighoumaneUserProvider),
-          meetingInfo()
-        ],
-      ),
+    return Column(
+      children: [
+        SizedBox(
+          height: height * 0.01,
+        ),
+        createMeeting(
+            width: width,
+            height: height,
+            lstFreinds: lstFreinds,
+            ighoumaneUserProvider: ighoumaneUserProvider,
+            currentUserId: currentUserId),
+        meetingInfo(currentUserId: currentUserId),
+      ],
     );
+  }
+
+  Future<void> _refreshData({required BuildContext ctx}) async {
+    MeetingLogicServices.getAllTodayMeeting(ctx: ctx);
   }
 
   Widget createMeeting(
       {required double width,
       required double height,
       required List<UserIghoumaneFreind> lstFreinds,
-      required IghoumaneUserProvider ighoumaneUserProvider}) {
+      required IghoumaneUserProvider ighoumaneUserProvider,
+      required String currentUserId}) {
     return OutlinedButton(
       onPressed: () {
         showDialog(
@@ -364,10 +376,6 @@ class MeetingScreenState extends State<MeetingScreen> {
                             if (_formKey.currentState!.validate()) {
                               if (invitedFreindsIds.isNotEmpty) {
                                 //Navigator.pop(context);
-                                String currentUserId = context
-                                    .read<IghoumaneUserProvider>()
-                                    .ighoumaneUser
-                                    .getUserId;
                                 var httpServices = HttpServices();
                                 String? token = await httpServices.getToken();
                                 token != null
@@ -380,13 +388,18 @@ class MeetingScreenState extends State<MeetingScreen> {
                                             meetingStatus: "OnGoing",
                                             title: meetingTitle.text)
                                         .then((value) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                MeetingPage(token: token),
-                                          ),
-                                        );
+                                        if (value != null) {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (ctx) => MeetingPage(
+                                                token: token,
+                                                meetingId: value,
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       })
                                     : null;
                               }
@@ -424,7 +437,7 @@ class MeetingScreenState extends State<MeetingScreen> {
                                         roleType: mRole!.name,
                                         currentUserId: currentUserId,
                                         joinedUsers: [],
-                                        meetingStatus: "Sceduele",
+                                        meetingStatus: "Offline",
                                         title: meetingTitle.text.trim())
                                     : null;
                                 Navigator.pop(context);
@@ -460,199 +473,240 @@ class MeetingScreenState extends State<MeetingScreen> {
     );
   }
 
-  Widget meetingInfo() {
+  Widget meetingInfo({required String currentUserId}) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.width;
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(
-          horizontal: width * 0.01, vertical: height * 0.01),
-      shrinkWrap: true, // Add this
-      physics: NeverScrollableScrollPhysics(), // Add this
-      itemCount: lstAllMeetings.length,
-      itemBuilder: (ctx, index) {
-        MeetingModel meetingModel = lstAllMeetings[index];
-        return Container(
-          alignment: Alignment.topLeft,
-          margin: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * 0.01),
-          padding: EdgeInsets.symmetric(
-              vertical: height * 0.01, horizontal: width * 0.03),
-          decoration: BoxDecoration(
-              color: deepBlueDark,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: deepBlue)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: height * 0.004, horizontal: width * 0.02),
-                    decoration: BoxDecoration(
-                        color: Colors.white12,
-                        borderRadius: BorderRadius.circular(width * 0.2)),
-                    child: Text(
-                      meetingModel.meetingStatus.toUpperCase(),
-                      style:
-                          TextStyle(color: white, fontWeight: FontWeight.bold),
+    return Consumer<IghoumaneUserProvider>(builder: (ctx, value, child) {
+      return Expanded(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _refreshData(ctx: context);
+          },
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(
+                horizontal: width * 0.01, vertical: height * 0.01),
+            //shrinkWrap: true, // Add this
+            //physics: NeverScrollableScrollPhysics(), // Add this
+            itemCount: value.lstMeetings.length,
+            itemBuilder: (ctx, index) {
+              MeetingModel meetingModel = value.lstMeetings[index];
+              return Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * 0.01),
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * 0.03),
+                decoration: BoxDecoration(
+                    color: deepBlueDark,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: deepBlue)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: height * 0.004,
+                              horizontal: width * 0.02),
+                          decoration: BoxDecoration(
+                              color: Colors.white12,
+                              borderRadius: BorderRadius.circular(width * 0.2)),
+                          child: Text(
+                            meetingModel.meetingStatus.toUpperCase(),
+                            style: TextStyle(
+                                color: white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await MeetingLogicServices.updateMeetingStatus(
+                                    ctx: context,
+                                    id: meetingModel.meetingId,
+                                    meetingStatus: "OnGoing",
+                                    leaveChannel: false,
+                                    userId: currentUserId)
+                                .then((value) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) => MeetingPage(
+                                    token: meetingModel.token,
+                                    meetingId: meetingModel.meetingId,
+                                  ),
+                                ),
+                              );
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: white,
+                          ),
+                          child: Text(
+                            "Join",
+                            style: TextStyle(
+                                color: deepBlueDark,
+                                fontWeight: FontWeight.bold,
+                                fontSize: width * 0.04),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) =>
-                              MeetingPage(token: meetingModel.token),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Text(
+                      meetingModel.title,
+                      style: TextStyle(
+                          color: white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: width * 0.05),
+                    ),
+                    Text(
+                      meetingModel.roleType.name,
+                      style: TextStyle(
+                          color: Colors.white54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: width * 0.03),
+                    ),
+                    Usefulfunctions.blankSpace(
+                        width: 0, height: height * 0.005),
+                    Builder(builder: (ctx) {
+                      int itemCount = meetingModel.joinedUsers.length;
+                      if (itemCount == 0) {
+                        return Text("");
+                      }
+                      if (itemCount > 4) {
+                        int others = itemCount - 4;
+                        return SizedBox(
+                          height: height * 0.15,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 4,
+                            itemBuilder: (ctx, index) {
+                              // joined users ids not name i will add this feature in the future inchallah
+                              String joinedUserId = meetingModel
+                                  .joinedUsers[index]
+                                  .substring(0, 2)
+                                  .toUpperCase();
+                              if (index == 3) {
+                                return Row(
+                                  children: [
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(right: width * .01),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: width * 0.03,
+                                          vertical: height * .014),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(width * .1),
+                                        border: Border.all(
+                                            color: deepBlueDark, width: 0),
+                                      ),
+                                      child: Text(
+                                        joinedUserId,
+                                        //meetingModel.meetingId
+                                        //    .substring(0, 2)
+                                        //    .toUpperCase(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: white),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(right: width * .01),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: width * 0.03,
+                                          vertical: height * .014),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(width * .1),
+                                        border: Border.all(
+                                            color: deepBlueDark, width: 0),
+                                      ),
+                                      child: Text(
+                                        "+$others",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: white),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: width * .01),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: width * 0.03,
+                                        vertical: height * .014),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(width * .1),
+                                        border: Border.all(
+                                            color: deepBlueDark, width: 0)),
+                                    child: Text(
+                                      joinedUserId,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: white),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      }
+                      return SizedBox(
+                        height: height * 0.15,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: itemCount,
+                          itemBuilder: (ctx, index) {
+                            String joinedUserId = meetingModel
+                                .joinedUsers[index]
+                                .substring(0, 2)
+                                .toUpperCase();
+                            return Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.03,
+                                      vertical: height * .014),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white54,
+                                      borderRadius:
+                                          BorderRadius.circular(width * .1),
+                                      border: Border.all(
+                                          color: deepBlueDark, width: 0)),
+                                  child: Text(
+                                    joinedUserId,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: white),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       );
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: white,
-                    ),
-                    child: Text(
-                      "Join",
-                      style: TextStyle(
-                          color: deepBlueDark,
-                          fontWeight: FontWeight.bold,
-                          fontSize: width * 0.04),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.01,
-              ),
-              Text(
-                meetingModel.title,
-                style: TextStyle(
-                    color: white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: width * 0.05),
-              ),
-              Text(
-                meetingModel.roleType.name,
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.bold,
-                    fontSize: width * 0.03),
-              ),
-              Usefulfunctions.blankSpace(width: 0, height: height * 0.005),
-              Builder(builder: (ctx) {
-                int itemCount = meetingModel.invitedUserIds.length;
-                if (itemCount > 4) {
-                  int others = itemCount - 4;
-                  return SizedBox(
-                    height: height * 0.15,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 4,
-                      itemBuilder: (ctx, index) {
-                        if (index == 3) {
-                          return Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(right: width * .01),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * .014),
-                                decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius:
-                                      BorderRadius.circular(width * .1),
-                                  border:
-                                      Border.all(color: deepBlueDark, width: 0),
-                                ),
-                                child: Text(
-                                  "S",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: white),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(right: width * .01),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * .014),
-                                decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius:
-                                      BorderRadius.circular(width * .1),
-                                  border:
-                                      Border.all(color: deepBlueDark, width: 0),
-                                ),
-                                child: Text(
-                                  "+$others",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: white),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                        return Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: width * .01),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.03,
-                                  vertical: height * .014),
-                              decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius:
-                                      BorderRadius.circular(width * .1),
-                                  border: Border.all(
-                                      color: deepBlueDark, width: 0)),
-                              child: Text(
-                                "S",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, color: white),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                }
-                return SizedBox(
-                  height: height * 0.15,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: itemCount,
-                    itemBuilder: (ctx, index) {
-                      return Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: width * 0.03,
-                                vertical: height * .014),
-                            decoration: BoxDecoration(
-                                color: Colors.white54,
-                                borderRadius: BorderRadius.circular(width * .1),
-                                border:
-                                    Border.all(color: deepBlueDark, width: 0)),
-                            child: Text(
-                              "${meetingModel.meetingId.substring(0, 2).toUpperCase()}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, color: white),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              }),
-            ],
+                    }),
+                  ],
+                ),
+              );
+            },
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 }
